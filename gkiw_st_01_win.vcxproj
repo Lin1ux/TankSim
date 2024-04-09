@@ -23,6 +23,7 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="cube.h" />
     <ClInclude Include="HullTank.h" />
+    <ClInclude Include="Libs.h" />
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="model.h" />
@@ -30,6 +31,7 @@
     <ClInclude Include="myCube.h" />
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="Primitive.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="shaderprogram.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="Tank.h" />
@@ -40,13 +42,13 @@
   <ItemGroup>
     <ClCompile Include="cube.cpp" />
     <ClCompile Include="HullTank.cpp" />
+    <ClCompile Include="Libs.cpp" />
     <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main_file.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="Model2.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
-    <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="shaderprogram.cpp" />
     <ClCompile Include="sphere.cpp" />
     <ClCompile Include="Tank.cpp" />
@@ -60,11 +62,16 @@
     <None Include="f_lambert.glsl" />
     <None Include="f_lamberttextured.glsl" />
     <None Include="f_textured.glsl" />
+    <None Include="Fragment_Shadder.glsl" />
+    <None Include="Vertex_core.glsl" />
     <None Include="v_constant.glsl" />
     <None Include="v_colored.glsl" />
     <None Include="v_lambert.glsl" />
     <None Include="v_lamberttextured.glsl" />
     <None Include="v_textured.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Tank Simulator.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

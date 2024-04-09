@@ -71,8 +71,6 @@ private:
 
 	void initModelMatrix()
 	{
-		
-
 		this->ModelMatrix = glm::mat4(1.0f);
 		this->ModelMatrix = glm::translate(this->ModelMatrix, this->position);
 		this->ModelMatrix = glm::rotate(this->ModelMatrix, glm::radians(this->rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -109,8 +107,11 @@ public:
 		this->position = position;
 		this->rotation = rotation;
 		this->scale = scale;
+		std::cout << "MESH\n";
 		this->InitVAO(vertexArray, nrOfVertices, indexArray, nrOfIndicies);
+		std::cout << "MATRIX\n";
 		this->UpdateModelMatrix();
+		std::cout << "DONE\n";
 	}
 	~Mesh()
 	{

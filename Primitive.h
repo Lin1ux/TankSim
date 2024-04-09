@@ -44,7 +44,7 @@ public:
 	{
 		return this->vertices.data();
 	}
-	inline GLuint* getInices()
+	inline GLuint* getIndices()
 	{
 		return this->indices.data();
 	}
@@ -58,3 +58,29 @@ public:
 	}
 };
 
+class Quad : public Primitive
+{
+public:
+	Quad() : Primitive()
+	{
+		Vertex vertices[] =
+		{
+			//Position						//Color							//Tex Cord					//Normals
+			glm::vec3(-0.5f,0.5f,0.0f),		glm::vec3(1.0f,0.0f,0.0f),		glm::vec2(0.0f,0.0f),		glm::vec3(-0.5f,0.5f,0.5f),
+			glm::vec3(-0.5f,-0.5f,0.0f),	glm::vec3(0.0f,1.0f,0.0f),		glm::vec2(0.f,0.0f),		glm::vec3(-0.5f,0.5f,0.5f),
+			glm::vec3(0.5f,-0.5f,0.0f),		glm::vec3(0.0f,0.0f,1.0f),		glm::vec2(0.0f,1.0f),		glm::vec3(-0.5f,0.5f,0.5f),
+			glm::vec3(0.5f,0.5f,0.0f),		glm::vec3(1.0f,1.0f,0.0f),		glm::vec2(0.0f,0.0f),		glm::vec3(-0.5f,0.5f,0.5f)
+		};
+		unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
+
+		GLuint indices[] =
+		{
+			0, 1, 2,	//Triangle 1
+			0, 2, 3		//Triangle 2
+		};
+		unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
+
+		this->set(vertices, nrOfVertices, indices, nrOfIndices);
+		
+	}
+};

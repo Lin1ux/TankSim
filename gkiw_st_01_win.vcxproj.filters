@@ -66,6 +66,12 @@
     <ClInclude Include="Primitive.h">
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Pliki naglówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="Libs.h">
+      <Filter>Pliki naglówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cube.cpp">
@@ -110,7 +116,7 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Pliki zródlowe</Filter>
     </ClCompile>
-    <ClCompile Include="Primitive.cpp">
+    <ClCompile Include="Libs.cpp">
       <Filter>Pliki zródlowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -145,5 +151,12 @@
     <None Include="v_textured.glsl">
       <Filter>Pliki zasobów</Filter>
     </None>
+    <None Include="Fragment_Shadder.glsl" />
+    <None Include="Vertex_core.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Tank Simulator.rc">
+      <Filter>Pliki zasobów</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

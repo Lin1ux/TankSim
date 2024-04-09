@@ -1,3 +1,389 @@
+#include "Libs.h"
+
+const int WindowWidth = 1600;
+const int WindowHeight = 900;
+
+//Trójkąt
+
+Vertex vertices[] =
+{
+	//Position							//Color								//TexCord					//Normals
+	glm::vec3(0.0f,0.5f,0.0f),			glm::vec3(1.0f,0.0f,0.0f),			glm::vec2(0.0f,1.0f),		glm::vec3(0.0f,0.0f,0.0f),
+	glm::vec3(-0.5f,-0.5f,0.0f),		glm::vec3(0.0f,1.0f,0.0f),			glm::vec2(0.0f,0.0f),		glm::vec3(0.0f,0.0f,0.0f),
+	glm::vec3(0.5f,-0.5f,0.0f),			glm::vec3(0.0f,0.0f,1.0f),			glm::vec2(1.0f,0.0f),		glm::vec3(0.0f,0.0f,0.0f)
+};
+unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);	//Liczba vertices
+
+GLuint indices[] =
+{
+	0, 1, 2
+};
+unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);	//Liczba punktów
+
+
+//Kamera
+glm::vec3 CamPosition = glm::vec3(0.0f, 1.0f, -5.0f);			//Pozycja kamery
+glm::vec3 CamTargetPosition = glm::vec3(0.0f, 0.0f, 0.0f);		//Pozycja celu (punktu na który patrzy kamera)
+float camSpeed = 500;											//Prędkość ruchu kamery
+float rotateSpeed = 250;										//Prędkość obrotu kamery
+int directon = 0;												//Kierunek Prawo/lewo
+int forward = 0;												//Kierunek Przód Prawo
+int camVertical = 0;											//Obrót kamery wertykalnie
+int camHorizontal = 0;											//Obrót kamery horyzontalnie
+//Kąt kamery
+float Yaw = 0.0f;
+float Pitch = 0.0f;
+float CamRotateSpeed = 50.0f;
+
+//Wykrywanie przycisków
+void updateInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+}
+
+//Obsługa przycisków
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		std::cout << "PRessed\n";
+		//Poruszanie kamery
+		if (key == GLFW_KEY_D)
+		{
+			directon += -1;
+		}
+		if (key == GLFW_KEY_A)
+		{
+			directon += 1;
+		}
+		if (key == GLFW_KEY_W)
+		{
+			forward += 1;
+		}
+		if (key == GLFW_KEY_S)
+		{
+			forward += -1;
+		}
+		//Obrót kamery
+		if (key == GLFW_KEY_UP)
+		{
+			camVertical += -1;
+		}
+		if (key == GLFW_KEY_DOWN)
+		{
+			camVertical += 1;
+		}
+		if (key == GLFW_KEY_RIGHT)
+		{
+			camHorizontal += 1;
+		}
+		if (key == GLFW_KEY_LEFT)
+		{
+			camHorizontal += -1;
+		}
+		if (key == GLFW_KEY_ESCAPE)
+		{
+			glfwSetWindowShouldClose(window, GLFW_TRUE);
+		}
+	}
+	else if (action == GLFW_RELEASE)
+	{
+		if (key == GLFW_KEY_D)
+		{
+			directon -= -1;
+		}
+		if (key == GLFW_KEY_A)
+		{
+			directon -= 1;
+		}
+		if (key == GLFW_KEY_W)
+		{
+			forward -= 1;
+		}
+		if (key == GLFW_KEY_S)
+		{
+			forward -= -1;
+		}
+		if (key == GLFW_KEY_UP)
+		{
+			camVertical -= -1;
+		}
+		if (key == GLFW_KEY_DOWN)
+		{
+			camVertical -= 1;
+		}
+		if (key == GLFW_KEY_RIGHT)
+		{
+			camHorizontal -= 1;
+		}
+		if (key == GLFW_KEY_LEFT)
+		{
+			camHorizontal -= -1;
+		}
+	}
+}
+
+//Pozwala na poprawną zmianę wielkości okna
+void FrameBufferResize(GLFWwindow* window, int fbW, int fbH)
+{
+	glViewport(0, 0, fbW, fbH);
+}
+
+//Ładuje shadery
+bool loadShaders(GLuint &program)
+{
+	bool loadSuccess = true;
+
+	char infoLog[512];
+	GLint success;
+
+	std::string temp = "";
+	std::string src = "";
+
+	std::ifstream file;
+
+	//Vertex Shader
+	
+	//Odczytanie Pliku Vertex
+	file.open("Vertex_core.glsl");
+
+	if (file.is_open())
+	{
+		while (std::getline(file, temp))
+		{
+			src += temp + "\n";
+		}
+	}
+	else
+	{
+		std::cout << "ERROR::LOADSHADER::Nie udało się otworzyć folderu\n";
+	}
+	file.close();
+	
+	//Kompilowanie Shaderu
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER); //Creates shader in background
+	const GLchar* vertSrc = src.c_str();
+	glShaderSource(vertexShader,1,&vertSrc,NULL);
+	glCompileShader(vertexShader);	//Compiles Shader
+
+	//Obsługa błędów
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+	if (!success)
+	{
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::LOADSHADER:: Nie udalo się skompilowac vertex shader\n";
+		std::cout << infoLog << "\n";
+	}
+	//Resetowanie danych pomocniczych
+	temp = "";
+	src = "";
+
+	//Fragment shader
+	//Odczytanie Fragment shadera
+	file.open("Fragment_Shadder.glsl");
+
+	if (file.is_open())
+	{
+		while (std::getline(file, temp))
+		{
+			src += temp + "\n";
+		}
+	}
+	else
+	{
+		std::cout << "ERROR::LOADSHADER::Nie udalo sie otworzyc folderu\n";
+		loadSuccess = false;
+	}
+	file.close();
+
+	//Kompilowanie Shadera
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER); //Creates shader in background
+	vertSrc = src.c_str();
+	glShaderSource(fragmentShader, 1, &vertSrc, NULL);
+	glCompileShader(fragmentShader);	//Compiles Shader
+
+	//Obsługa błędu
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
+	if (!success)
+	{
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		std::cout << "ERROR::LOADSHADER:: Nie udalo się skompilowac fragment shader\n";
+		std::cout << infoLog << "\n";
+		loadSuccess = false;
+	}
+
+	//Tworzenie Programu Shaderów
+	program = glCreateProgram();
+
+	//Dodawanie shaderów
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, fragmentShader);
+
+	glLinkProgram(program);	//Zalinkowanie wszystkich dodanych shaderów
+
+	//Obsługa błędu
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(program, 512, NULL, infoLog);
+		std::cout << "ERROR::LOADSHADER:: nie udalo sie zalinkowac programu\n";
+		std::cout << infoLog << "\n";
+		loadSuccess = false;
+	}
+
+	//Zwolnienie pamięci
+	glUseProgram(0);
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	return loadSuccess;
+}
+
+//Główny program
+int main()
+{
+	//Inicjalizacja biblioteki GLFW
+	glfwInit();
+
+	//Tworzenie okna
+	int framebufferWidth = 0;
+	int framebufferHeight = 0;
+
+	//Parametry okna
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+
+	GLFWwindow* window = glfwCreateWindow(WindowWidth, WindowHeight,"Tank Simulator",NULL,NULL);
+
+	//Pozwala na poprawne zmianę wielkości okna w trakcie działania programu
+	glfwSetFramebufferSizeCallback(window, FrameBufferResize); 
+	glfwMakeContextCurrent(window);
+
+	//Inicjalizacja biblioteki GLEW (Wymaga okna do poprawnego działania)
+
+	glewExperimental = GL_TRUE;
+
+	//Obsługa błędu GLEW
+	if (glewInit() != GLEW_OK)
+	{
+		std::cout << "ERROR::main_file.cpp - Nie udalo sie zaladowac biblioteki GLEW\n";
+		glfwTerminate();
+	}
+
+	//Opcje OpenGL
+	glEnable(GL_DEPTH_TEST);
+
+	glEnable(GL_CULL_FACE);	//Usuwa nie potrzebne rzeczy
+	glCullFace(GL_BACK);	//Usuwa tył
+	glFrontFace(GL_CCW);	//przeciwnie do wskazówek zegara
+
+	glEnable(GL_BLEND);		//Blending colors
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	//GL_LINE
+
+	//Inicjalizacja wykrywania klawiszy
+	glfwSetKeyCallback(window, key_callback);
+
+	//Inicjalizacja Shaderów
+	GLuint coreProgram;
+	if (!loadShaders(coreProgram))
+	{
+		glfwTerminate();
+	}
+	//Model
+
+	//VAO
+
+	//Ładowanie do karty graficznej
+	GLuint VAO;
+	glCreateVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	//Buffor Vertexów
+	//VBO
+	GLuint VBO;
+	glGenBuffers(1,&VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //GL_DYNAMIC_DRAW - jeśli zmieniane są dane
+	
+	//Buffor elementów
+	//EBO
+	GLuint EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	//Format Zapisywania Vertexów
+
+	//GLuint attribLoc = glGetAttribLocation(coreProgram,"vertex_position");
+	//Position
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,position));
+	glEnableVertexAttribArray(0);
+	//Color
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
+	glEnableVertexAttribArray(1);
+	//texCord
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcord));
+	glEnableVertexAttribArray(2);
+
+	//Bind VAO
+	glBindVertexArray(0);
+
+	//Pętla Gry
+	while (!glfwWindowShouldClose(window))
+	{
+		//Aktualizacja wydarzeń (np wyłączanie okna X)
+		glfwPollEvents();
+
+		//Aktualizowanie (Update)
+		updateInput(window);
+
+		//Czyszczenie ekranu i buforów
+		glClearColor(0.1f, 0.1f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+		//użycie programu
+		glUseProgram(coreProgram);
+
+		//Bindowanie obiekt tablicy vertexów
+		glBindVertexArray(VAO);
+
+		//Rysowanie obiektów
+		glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
+		
+		//glDrawArrays(GL_TRIANGLES, vertices,);
+
+		//Koniec rysowania 
+		glfwSwapBuffers(window);
+		glFlush();
+	}
+
+	//Zwalnianie pamięci
+	glfwDestroyWindow(window);
+	glfwTerminate();
+	
+	glDeleteProgram(coreProgram);
+
+	system("Pause");
+
+	return 0;
+}
+
+
+
+
+
+
+
+
 /*
 Niniejszy program jest wolnym oprogramowaniem; możesz go
 rozprowadzać dalej i / lub modyfikować na warunkach Powszechnej
@@ -18,6 +404,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 */
 
 
+/*
 #define GLM_FORCE_RADIANS
 
 #include <GL/glew.h>
@@ -28,12 +415,14 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+
 #include "constants.h"
 #include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
 
 #include "Primitive.h"
+#include "Mesh.h"
 #include "Tank.h"
 #include "HullTank.h"
 
@@ -60,6 +449,10 @@ float CamRotateSpeed = 50.0f;
 
 
 //Modele
+
+Primitive testP();
+
+	
 Tank tonk = Tank::Tank();
 static Models::HullTank HullTank();
 
@@ -127,7 +520,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		if (key == GLFW_KEY_W && (mods & GLFW_MOD_ALT) != 0)
 			printf("ALT+W\n");
 		if (key == GLFW_KEY_A) wheelRotate = 30.f;
-		if (key == GLFW_KEY_D) wheelRotate = -30.f;*/
+		if (key == GLFW_KEY_D) wheelRotate = -30.f;
 	}
 	else if (action == GLFW_RELEASE) 
 	{
@@ -171,7 +564,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		if (key == GLFW_KEY_A || key == GLFW_KEY_D)
 		{
 			wheelRotate = 0;
-		}*/
+		}
 	}
 }
 
@@ -242,6 +635,7 @@ void drawScene(GLFWwindow* window, float angle) {
 	Ground = glm::scale(Ground, glm::vec3(5.0f, 1.0f, 5.0f));
 	glUniformMatrix4fv(spConstant->u("M"), 1, false, glm::value_ptr(Ground));
 	Models::cube.drawSolid();
+
 	
 	//spLambert->use();
 
@@ -413,7 +807,6 @@ void drawScene(GLFWwindow* window, float angle) {
 	glUniform4f(spLambert->u("color"), 0.1, 0.6, 0.1, 1);
 	planet1.drawSolid();
 
-	*/
 	glfwSwapBuffers(window);
 
 }
@@ -454,7 +847,16 @@ int main(void)
 	initOpenGLProgram(window); //Operacje inicjujące
 
 	//Models::hullTank.loadModel(); //Wczytywanie danych .obj
-
+	//Modele
+	/*Mesh test = Mesh(
+		Quad().getVertices(),
+		Quad().getNrOfVertices(),
+		Quad().getIndices(),
+		Quad().getNrOfIndices(),
+		glm::vec3(0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(1.0f));//
+	
 	//Główna pętla	
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
@@ -463,6 +865,7 @@ int main(void)
 		glfwSetTime(0);
 		drawScene(window, angle); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
+		//test.render();
 	}
 
 	freeOpenGLProgram(window);
@@ -471,3 +874,4 @@ int main(void)
 	glfwTerminate(); //Zwolnij zasoby zajęte przez GLFW
 	exit(EXIT_SUCCESS);
 }
+*/
