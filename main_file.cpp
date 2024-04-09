@@ -32,6 +32,8 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
+
+#include "Primitive.h"
 #include "Tank.h"
 #include "HullTank.h"
 
