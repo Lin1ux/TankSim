@@ -159,4 +159,12 @@
       <Filter>Pliki zasobów</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\bricks.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\stone-wall.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

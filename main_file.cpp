@@ -8,15 +8,17 @@ const int WindowHeight = 900;
 Vertex vertices[] =
 {
 	//Position							//Color								//TexCord					//Normals
-	glm::vec3(0.0f,0.5f,0.0f),			glm::vec3(1.0f,0.0f,0.0f),			glm::vec2(0.0f,1.0f),		glm::vec3(0.0f,0.0f,0.0f),
+	glm::vec3(-0.5f,0.5f,0.0f),			glm::vec3(1.0f,0.0f,0.0f),			glm::vec2(0.0f,1.0f),		glm::vec3(0.0f,0.0f,0.0f),
 	glm::vec3(-0.5f,-0.5f,0.0f),		glm::vec3(0.0f,1.0f,0.0f),			glm::vec2(0.0f,0.0f),		glm::vec3(0.0f,0.0f,0.0f),
-	glm::vec3(0.5f,-0.5f,0.0f),			glm::vec3(0.0f,0.0f,1.0f),			glm::vec2(1.0f,0.0f),		glm::vec3(0.0f,0.0f,0.0f)
+	glm::vec3(0.5f,-0.5f,0.0f),			glm::vec3(0.0f,0.0f,1.0f),			glm::vec2(1.0f,0.0f),		glm::vec3(0.0f,0.0f,0.0f),
+	glm::vec3(0.5f,0.5f,0.0f),			glm::vec3(1.0f,1.0f,0.0f),			glm::vec2(1.0f,1.0f),		glm::vec3(0.0f,0.0f,0.0f)
 };
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);	//Liczba vertices
 
 GLuint indices[] =
 {
-	0, 1, 2
+	0, 1, 2,	//1 Trójkąt
+	0, 2, 3		//2 Trójkąt
 };
 unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);	//Liczba punktów
 
@@ -34,6 +36,39 @@ int camHorizontal = 0;											//Obrót kamery horyzontalnie
 float Yaw = 0.0f;
 float Pitch = 0.0f;
 float CamRotateSpeed = 50.0f;
+
+//Czytanie textur
+GLuint readTexture(const char* filename) 
+{ 
+	GLuint tex;
+	glActiveTexture(GL_TEXTURE0);
+	
+	//Wczytanie do pamięci komputera
+	std::vector<unsigned char> image;	//Alokuj wektor do wczytania obrazka
+	unsigned width, height;				//Zmienne do których wczytamy wymiary obrazka
+	
+	//Wczytanie obrazka
+	unsigned error = lodepng::decode(image, width, height, filename);
+	
+	//Import do pamięci karty graficznej
+	glGenTextures(1, &tex);				//Zainicjuj jeden uchwyt
+	glBindTexture(GL_TEXTURE_2D, tex);	//Uaktywnij uchwyt
+
+	//Wczytanie obrazka do pamięci Karty graficznej
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
+
+	glGenerateMipmap(GL_TEXTURE_2D);			//Generowanie mipmapy
+	
+	//Opcje
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);					//Powtarzanie textury
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);	//Antyalliasing						//Powtarzanie textury
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	return tex;
+}
 
 //Wykrywanie przycisków
 void updateInput(GLFWwindow* window)
@@ -244,6 +279,44 @@ bool loadShaders(GLuint &program)
 	return loadSuccess;
 }
 
+//Klawiatura
+void updateInput(GLFWwindow* window,glm::vec3& position, glm::vec3& rotation, glm::vec3& scale)
+{
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		position.z -= 0.001f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		position.z += 0.001f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		position.x -= 0.001f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		position.x += 0.001f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		rotation.y -= 0.1f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		rotation.y += 0.1f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+	{
+		scale += 0.01f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+	{
+		scale -= 0.01f;
+	}
+
+}
+
 //Główny program
 int main()
 {
@@ -263,6 +336,7 @@ int main()
 	GLFWwindow* window = glfwCreateWindow(WindowWidth, WindowHeight,"Tank Simulator",NULL,NULL);
 
 	//Pozwala na poprawne zmianę wielkości okna w trakcie działania programu
+	glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
 	glfwSetFramebufferSizeCallback(window, FrameBufferResize); 
 	glfwMakeContextCurrent(window);
 
@@ -337,11 +411,66 @@ int main()
 	//Bind VAO
 	glBindVertexArray(0);
 
+	//Texture 0
+	GLuint texture0 = readTexture("Textures/bricks.png");
+
+	glActiveTexture(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//Texture 2
+	GLuint texture1 = readTexture("Textures/stone-wall.png");
+
+	glActiveTexture(1);
+	glBindTexture(GL_TEXTURE_2D, 1);
+
+	//Inicjalizacja Macierzy
+	glm::vec3 position(0.0f);
+	glm::vec3 rotation(0.0f);
+	glm::vec3 scale(1.0f);
+	
+	glm::mat4 ModelMatrix(1.0f);
+	ModelMatrix = glm::translate(ModelMatrix,position);
+	ModelMatrix = glm::rotate(ModelMatrix,glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	ModelMatrix = glm::rotate(ModelMatrix,glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	ModelMatrix = glm::rotate(ModelMatrix,glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+	ModelMatrix = glm::scale(ModelMatrix,scale);
+
+	//Kamera
+
+	glm::vec3 camPosition(0.0f,0.0f,1.0f);
+	glm::vec3 worldUp(0.0f,1.0f,0.0f);
+	glm::vec3 camFront(0.0f, 0.0f, -1.0f);
+	glm::mat4 ViewMatrix(1.0f);
+	ViewMatrix = glm::lookAt(camPosition,camPosition + camFront,worldUp);
+
+	float FOV = 90.0f;			//Pole widzenia
+	float nearPlane = 0.1f;
+	float farPlane = 100.0f;	//Zasięg rysowania
+	glm::mat4 ProjectionMatrix(1.0f);
+	ProjectionMatrix = glm::perspective
+	(
+		glm::radians(FOV),
+		static_cast<float>(framebufferWidth) / framebufferHeight,
+		nearPlane,
+		farPlane
+	);
+
+
+	glUseProgram(coreProgram);
+
+	glUniformMatrix4fv(glGetUniformLocation(coreProgram,"ModelMatrix"), 1, GL_FALSE, glm::value_ptr(ModelMatrix));
+	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ViewMatrix"), 1, GL_FALSE, glm::value_ptr(ViewMatrix));
+	glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(ProjectionMatrix));
+
+
+	glUseProgram(0);
+
 	//Pętla Gry
 	while (!glfwWindowShouldClose(window))
 	{
 		//Aktualizacja wydarzeń (np wyłączanie okna X)
 		glfwPollEvents();
+		updateInput(window, position, rotation, scale);
 
 		//Aktualizowanie (Update)
 		updateInput(window);
@@ -353,17 +482,57 @@ int main()
 		//użycie programu
 		glUseProgram(coreProgram);
 
-		//Bindowanie obiekt tablicy vertexów
+		//wysyłanie shaderów do karty graficznej
+		glUniform1i(glGetUniformLocation(coreProgram,"texture0"),0);
+		glUniform1i(glGetUniformLocation(coreProgram,"texture1"),1);
+
+		//transformacje (move, rotate, scale)
+
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, position);
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+		ModelMatrix = glm::scale(ModelMatrix, scale);
+
+		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ModelMatrix"), 1, GL_FALSE, glm::value_ptr(ModelMatrix));
+
+		//Pozwala na zmianę wielkości okna
+		
+		glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
+		ProjectionMatrix = glm::mat4(1.0f);
+		ProjectionMatrix = glm::perspective
+		(
+			glm::radians(FOV),
+			static_cast<float>(framebufferWidth) / framebufferHeight,
+			nearPlane,
+			farPlane
+		);
+
+		glUniformMatrix4fv(glGetUniformLocation(coreProgram, "ProjectionMatrix"), 1, GL_FALSE, glm::value_ptr(ProjectionMatrix));
+
+		//Aktywacja textur
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+
+		//Bindowanie obiektu tablicy vertexów
 		glBindVertexArray(VAO);
 
 		//Rysowanie obiektów
 		glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
 		
-		//glDrawArrays(GL_TRIANGLES, vertices,);
+		//glDrawArrays(GL_TRIANGLES, 0 , nrOfVertices);
 
 		//Koniec rysowania 
 		glfwSwapBuffers(window);
 		glFlush();
+
+		glBindVertexArray(0);
+		glUseProgram(0);
+		glActiveTexture(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	//Zwalnianie pamięci
