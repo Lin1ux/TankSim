@@ -16,3 +16,4 @@
 
 #include "lodepng.h"
 #include "Vertex.h"
+#include "Shader.h"

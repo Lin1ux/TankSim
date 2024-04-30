@@ -32,6 +32,7 @@
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="shaderprogram.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="Tank.h" />
@@ -49,6 +50,7 @@
     <ClCompile Include="model.cpp" />
     <ClCompile Include="Model2.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="shaderprogram.cpp" />
     <ClCompile Include="sphere.cpp" />
     <ClCompile Include="Tank.cpp" />
