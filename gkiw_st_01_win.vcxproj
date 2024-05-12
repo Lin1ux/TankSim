@@ -25,6 +25,7 @@
     <ClInclude Include="HullTank.h" />
     <ClInclude Include="Libs.h" />
     <ClInclude Include="lodepng.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="Model2.h" />
@@ -37,6 +38,7 @@
     <ClInclude Include="sphere.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="teapot.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="torus.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
@@ -46,6 +48,7 @@
     <ClCompile Include="Libs.cpp" />
     <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main_file.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="Model2.cpp" />
@@ -55,6 +58,7 @@
     <ClCompile Include="sphere.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="teapot.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="torus.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>

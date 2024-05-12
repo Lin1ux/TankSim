@@ -37,39 +37,6 @@ float Yaw = 0.0f;
 float Pitch = 0.0f;
 float CamRotateSpeed = 50.0f;
 
-//Czytanie textur
-GLuint readTexture(const char* filename) 
-{ 
-	GLuint tex;
-	glActiveTexture(GL_TEXTURE0);
-	
-	//Wczytanie do pamięci komputera
-	std::vector<unsigned char> image;	//Alokuj wektor do wczytania obrazka
-	unsigned width, height;				//Zmienne do których wczytamy wymiary obrazka
-	
-	//Wczytanie obrazka
-	unsigned error = lodepng::decode(image, width, height, filename);
-	
-	//Import do pamięci karty graficznej
-	glGenTextures(1, &tex);				//Zainicjuj jeden uchwyt
-	glBindTexture(GL_TEXTURE_2D, tex);	//Uaktywnij uchwyt
-
-	//Wczytanie obrazka do pamięci Karty graficznej
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
-
-	glGenerateMipmap(GL_TEXTURE_2D);			//Generowanie mipmapy
-	
-	//Opcje
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);					//Powtarzanie textury
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);	//Antyalliasing						//Powtarzanie textury
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	return tex;
-}
-
 //Wykrywanie przycisków
 void updateInput(GLFWwindow* window)
 {
@@ -412,16 +379,13 @@ int main()
 	glBindVertexArray(3);
 
 	//Texture 0
-	GLuint texture0 = readTexture("Textures/bricks.png");
+	Texture texture_0("Textures/bricks.png",GL_TEXTURE_2D,0);
 
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	//Texture 1
+	Texture texture_1("Textures/stone-wall.png",GL_TEXTURE_2D,1);
 
-	//Texture 2
-	GLuint texture1 = readTexture("Textures/stone-wall.png");
-
-	glActiveTexture(1);
-	glBindTexture(GL_TEXTURE_2D, 1);
+	//Materiał 0
+	Material material0(glm::vec3(1.0f), glm::vec3(0.5f), glm::vec3(5.0f), texture_0.getTextureUnit(), texture_1.getTextureUnit());
 
 	//Inicjalizacja Macierzy
 	glm::vec3 position(0.0f);
@@ -484,8 +448,9 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		//wysyłanie shaderów do karty graficznej
-		coreProgram.set1i(0, "texture0");
-		coreProgram.set1i(1, "texture1");
+		coreProgram.set1i(texture_0.getTextureUnit(), "texture0");
+		coreProgram.set1i(texture_1.getTextureUnit(), "texture1");
+		material0.sendToShader(coreProgram);
 
 		//transformacje (move, rotate, scale)
 
@@ -515,10 +480,8 @@ int main()
 		coreProgram.use();
 
 		//Aktywacja textur
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture1);
+		texture_0.bind();
+		texture_1.bind();
 
 		//Bindowanie obiektu tablicy vertexów
 		glBindVertexArray(VAO);
