@@ -8,10 +8,10 @@ const int WindowHeight = 900;
 Vertex vertices[] =
 {
 	//Position							//Color								//TexCord					//Normals
-	glm::vec3(-0.5f,0.5f,0.0f),			glm::vec3(1.0f,0.0f,0.0f),			glm::vec2(0.0f,1.0f),		glm::vec3(0.0f,0.0f,-1.0f),
-	glm::vec3(-0.5f,-0.5f,0.0f),		glm::vec3(0.0f,1.0f,0.0f),			glm::vec2(0.0f,0.0f),		glm::vec3(0.0f,0.0f,-1.0f),
-	glm::vec3(0.5f,-0.5f,0.0f),			glm::vec3(0.0f,0.0f,1.0f),			glm::vec2(1.0f,0.0f),		glm::vec3(0.0f,0.0f,-1.0f),
-	glm::vec3(0.5f,0.5f,0.0f),			glm::vec3(1.0f,1.0f,0.0f),			glm::vec2(1.0f,1.0f),		glm::vec3(0.0f,0.0f,-1.0f)
+	glm::vec3(-0.5f,0.5f,0.0f),			glm::vec3(1.0f,0.0f,0.0f),			glm::vec2(0.0f,1.0f),		glm::vec3(0.0f,0.0f,1.0f),
+	glm::vec3(-0.5f,-0.5f,0.0f),		glm::vec3(0.0f,1.0f,0.0f),			glm::vec2(0.0f,0.0f),		glm::vec3(0.0f,0.0f,1.0f),
+	glm::vec3(0.5f,-0.5f,0.0f),			glm::vec3(0.0f,0.0f,1.0f),			glm::vec2(1.0f,0.0f),		glm::vec3(0.0f,0.0f,1.0f),
+	glm::vec3(0.5f,0.5f,0.0f),			glm::vec3(1.0f,1.0f,0.0f),			glm::vec2(1.0f,1.0f),		glm::vec3(0.0f,0.0f,1.0f)
 };
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);	//Liczba vertices
 
@@ -38,17 +38,50 @@ float Pitch = 0.0f;
 float CamRotateSpeed = 50.0f;
 
 //Wykrywanie przycisków
-void updateInput(GLFWwindow* window)
+void updateInput(GLFWwindow* window, Mesh& mesh)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		mesh.Move(glm::vec3(0.0f,0.0f,-0.001f * glfwGetTime()));
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		mesh.Move(glm::vec3(0.0f, 0.0f, 0.001f * glfwGetTime()));
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		mesh.Move(glm::vec3(-0.001f * glfwGetTime(), 0.0f, 0.0f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		mesh.Move(glm::vec3(0.001f * glfwGetTime(), 0.0f, 0.0f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		mesh.Rotate(glm::vec3(0.0f, -0.01f * glfwGetTime(), 0.001f ));
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		mesh.Rotate(glm::vec3(0.0f, 0.01f * glfwGetTime(), 0.001f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+	{
+		mesh.Scale(glm::vec3(0.01 * glfwGetTime()));
+	}
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+	{
+		mesh.Scale(glm::vec3(-0.01 * glfwGetTime()));
 	}
 }
 
 //Obsługa przycisków
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	return;
 	if (action == GLFW_PRESS)
 	{
 		std::cout << "PRessed\n";
@@ -336,47 +369,12 @@ int main()
 	//Inicjalizacja Shaderów
 	shader coreProgram((char*)"Vertex_core.glsl", (char*)"Fragment_Shadder.glsl");
 
-	//Model
-
-	//VAO
-
-	//Ładowanie do karty graficznej
-	GLuint VAO;
-	glCreateVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	//Buffor Vertexów
-	//VBO
-	GLuint VBO;
-	glGenBuffers(1,&VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //GL_DYNAMIC_DRAW - jeśli zmieniane są dane
-	
-	//Buffor elementów
-	//EBO
-	GLuint EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	//Format Zapisywania Vertexów
-
-	//GLuint attribLoc = glGetAttribLocation(coreProgram,"vertex_position");
-	//Position
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),(GLvoid*)offsetof(Vertex,position));
-	glEnableVertexAttribArray(0);
-	//Color
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
-	glEnableVertexAttribArray(1);
-	//texCord
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcord));
-	glEnableVertexAttribArray(2);
-	//Normal
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
-	glEnableVertexAttribArray(2);
-
-	//Bind VAO
-	glBindVertexArray(3);
+	//Model (Mesh)
+	Mesh testMesh(vertices, nrOfVertices, indices, nrOfIndices,
+		glm::vec3(0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(2.0f)
+		);
 
 	//Texture 0
 	Texture texture_0("Textures/bricks.png",GL_TEXTURE_2D,0);
@@ -388,16 +386,7 @@ int main()
 	Material material0(glm::vec3(1.0f), glm::vec3(0.5f), glm::vec3(5.0f), texture_0.getTextureUnit(), texture_1.getTextureUnit());
 
 	//Inicjalizacja Macierzy
-	glm::vec3 position(0.0f);
-	glm::vec3 rotation(0.0f);
-	glm::vec3 scale(1.0f);
 	
-	glm::mat4 ModelMatrix(1.0f);
-	ModelMatrix = glm::translate(ModelMatrix,position);
-	ModelMatrix = glm::rotate(ModelMatrix,glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-	ModelMatrix = glm::rotate(ModelMatrix,glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-	ModelMatrix = glm::rotate(ModelMatrix,glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-	ModelMatrix = glm::scale(ModelMatrix,scale);
 
 	//Kamera
 
@@ -423,8 +412,6 @@ int main()
 	glm::vec3 lightPos0(0.0f, 0.0f, 1.f); //Pozycja światła
 
 	//Inicjalizacja Uniforms
-
-	coreProgram.setMat4fv(ModelMatrix, "ModelMatrix");
 	coreProgram.setMat4fv(ViewMatrix, "ViewMatrix");
 	coreProgram.setMat4fv(ProjectionMatrix, "ProjectionMatrix");
 	
@@ -438,10 +425,10 @@ int main()
 	{
 		//Aktualizacja wydarzeń (np wyłączanie okna X)
 		glfwPollEvents();
-		updateInput(window, position, rotation, scale);
+		updateInput(window, testMesh);
 
 		//Aktualizowanie (Update)
-		updateInput(window);
+		updateInput(window,testMesh);
 
 		//Czyszczenie ekranu i buforów
 		glClearColor(0.1f, 0.1f, 0.3f, 1.0f);
@@ -454,14 +441,7 @@ int main()
 
 		//transformacje (move, rotate, scale)
 
-		ModelMatrix = glm::mat4(1.0f);
-		ModelMatrix = glm::translate(ModelMatrix, position);
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-		ModelMatrix = glm::scale(ModelMatrix, scale);
-
-		coreProgram.setMat4fv(ModelMatrix, "ModelMatrix");
+		//coreProgram.setMat4fv(ModelMatrix, "ModelMatrix");
 
 		//Pozwala na zmianę wielkości okna
 		
@@ -483,12 +463,8 @@ int main()
 		texture_0.bind();
 		texture_1.bind();
 
-		//Bindowanie obiektu tablicy vertexów
-		glBindVertexArray(VAO);
+		testMesh.render(&coreProgram);
 
-		//Rysowanie obiektów
-		glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
-		
 		//glDrawArrays(GL_TRIANGLES, 0 , nrOfVertices);
 
 		//Koniec rysowania 
