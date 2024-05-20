@@ -1,27 +1,10 @@
-#include "Libs.h"
+#include "Game.h"
+
+
+//#include "Libs.h"
 
 const int WindowWidth = 1600;
 const int WindowHeight = 900;
-
-//Trójkąt
-
-Vertex vertices[] =
-{
-	//Position							//Color								//TexCord					//Normals
-	glm::vec3(-0.5f,0.5f,0.0f),			glm::vec3(1.0f,0.0f,0.0f),			glm::vec2(0.0f,1.0f),		glm::vec3(0.0f,0.0f,1.0f),
-	glm::vec3(-0.5f,-0.5f,0.0f),		glm::vec3(0.0f,1.0f,0.0f),			glm::vec2(0.0f,0.0f),		glm::vec3(0.0f,0.0f,1.0f),
-	glm::vec3(0.5f,-0.5f,0.0f),			glm::vec3(0.0f,0.0f,1.0f),			glm::vec2(1.0f,0.0f),		glm::vec3(0.0f,0.0f,1.0f),
-	glm::vec3(0.5f,0.5f,0.0f),			glm::vec3(1.0f,1.0f,0.0f),			glm::vec2(1.0f,1.0f),		glm::vec3(0.0f,0.0f,1.0f)
-};
-unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);	//Liczba vertices
-
-GLuint indices[] =
-{
-	0, 1, 2,	//1 Trójkąt
-	0, 2, 3		//2 Trójkąt
-};
-unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);	//Liczba punktów
-
 
 //Kamera
 glm::vec3 CamPosition = glm::vec3(0.0f, 1.0f, -5.0f);			//Pozycja kamery
@@ -317,171 +300,40 @@ void updateInput(GLFWwindow* window,glm::vec3& position, glm::vec3& rotation, gl
 
 }
 
+GLFWwindow* createWindow(
+	const char* title, 
+	const int width, const int height,
+	int& fbWidth, int& fbHeight,
+	const int GLMajorVer, const int GLMinorVer,
+	bool resizable)
+{
+	//Parametry okna
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GLMajorVer);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GLMinorVer);
+	glfwWindowHint(GLFW_RESIZABLE, resizable);
+
+	GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
+
+	//Pozwala na poprawne zmianę wielkości okna w trakcie działania programu
+	glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+	glfwSetFramebufferSizeCallback(window, Game::FrameBufferResize);
+	glfwMakeContextCurrent(window);
+
+	return window;
+}
+
 //Główny program
 int main()
 {
-	//Inicjalizacja biblioteki GLFW
-	glfwInit();
-
-	//Tworzenie okna
-	int framebufferWidth = 0;
-	int framebufferHeight = 0;
-
-	//Parametry okna
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-
-	GLFWwindow* window = glfwCreateWindow(WindowWidth, WindowHeight,"Tank Simulator",NULL,NULL);
-
-	//Pozwala na poprawne zmianę wielkości okna w trakcie działania programu
-	glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
-	glfwSetFramebufferSizeCallback(window, FrameBufferResize); 
-	glfwMakeContextCurrent(window);
-
-	//Inicjalizacja biblioteki GLEW (Wymaga okna do poprawnego działania)
-
-	glewExperimental = GL_TRUE;
-
-	//Obsługa błędu GLEW
-	if (glewInit() != GLEW_OK)
-	{
-		std::cout << "ERROR::main_file.cpp - Nie udalo sie zaladowac biblioteki GLEW\n";
-		glfwTerminate();
-	}
-
-	//Opcje OpenGL
-	glEnable(GL_DEPTH_TEST);
-
-	glEnable(GL_CULL_FACE);	//Usuwa nie potrzebne rzeczy
-	glCullFace(GL_BACK);	//Usuwa tył
-	glFrontFace(GL_CCW);	//przeciwnie do wskazówek zegara
-
-	glEnable(GL_BLEND);		//Blending colors
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	//GL_LINE
-
-	//Inicjalizacja wykrywania klawiszy
-	glfwSetKeyCallback(window, key_callback);
-
-	//Inicjalizacja Shaderów
-	shader coreProgram((char*)"Vertex_core.glsl", (char*)"Fragment_Shadder.glsl");
-
-	//Model (Mesh)
-	Mesh testMesh(vertices, nrOfVertices, indices, nrOfIndices,
-		glm::vec3(0.0f),
-		glm::vec3(0.0f),
-		glm::vec3(2.0f)
-		);
-
-	//Texture 0
-	Texture texture_0("Textures/bricks.png",GL_TEXTURE_2D,0);
-
-	//Texture 1
-	Texture texture_1("Textures/stone-wall.png",GL_TEXTURE_2D,1);
-
-	//Materiał 0
-	Material material0(glm::vec3(1.0f), glm::vec3(0.5f), glm::vec3(5.0f), texture_0.getTextureUnit(), texture_1.getTextureUnit());
-
-	//Inicjalizacja Macierzy
-	
-
-	//Kamera
-
-	glm::vec3 camPosition(0.0f,0.0f,1.0f);
-	glm::vec3 worldUp(0.0f,1.0f,0.0f);
-	glm::vec3 camFront(0.0f, 0.0f, -1.0f);
-	glm::mat4 ViewMatrix(1.0f);
-	ViewMatrix = glm::lookAt(camPosition,camPosition + camFront,worldUp);
-
-	float FOV = 90.0f;			//Pole widzenia
-	float nearPlane = 0.1f;
-	float farPlane = 100.0f;	//Zasięg rysowania
-	glm::mat4 ProjectionMatrix(1.0f);
-	ProjectionMatrix = glm::perspective
-	(
-		glm::radians(FOV),
-		static_cast<float>(framebufferWidth) / framebufferHeight,
-		nearPlane,
-		farPlane
-	);
-
-	//Światło
-	glm::vec3 lightPos0(0.0f, 0.0f, 1.f); //Pozycja światła
-
-	//Inicjalizacja Uniforms
-	coreProgram.setMat4fv(ViewMatrix, "ViewMatrix");
-	coreProgram.setMat4fv(ProjectionMatrix, "ProjectionMatrix");
-	
-	//Pozycja światła
-	coreProgram.setVec3f(lightPos0, "lightPos0");
-	coreProgram.setVec3f(camPosition, "cameraPos");
-
+	Game Game("Tank Simulator",1600,900,3,3,false);
 
 	//Pętla Gry
-	while (!glfwWindowShouldClose(window))
+	while (!Game.getWindowShouldClose())
 	{
 		//Aktualizacja wydarzeń (np wyłączanie okna X)
-		glfwPollEvents();
-		updateInput(window, testMesh);
-
-		//Aktualizowanie (Update)
-		updateInput(window,testMesh);
-
-		//Czyszczenie ekranu i buforów
-		glClearColor(0.1f, 0.1f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-		//wysyłanie shaderów do karty graficznej
-		coreProgram.set1i(texture_0.getTextureUnit(), "texture0");
-		coreProgram.set1i(texture_1.getTextureUnit(), "texture1");
-		material0.sendToShader(coreProgram);
-
-		//transformacje (move, rotate, scale)
-
-		//coreProgram.setMat4fv(ModelMatrix, "ModelMatrix");
-
-		//Pozwala na zmianę wielkości okna
-		
-		glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
-		ProjectionMatrix = glm::mat4(1.0f);
-		ProjectionMatrix = glm::perspective
-		(
-			glm::radians(FOV),
-			static_cast<float>(framebufferWidth) / framebufferHeight,
-			nearPlane,
-			farPlane
-		);
-
-		coreProgram.setMat4fv(ProjectionMatrix, "ProjectionMatrix");
-
-		coreProgram.use();
-
-		//Aktywacja textur
-		texture_0.bind();
-		texture_1.bind();
-
-		testMesh.render(&coreProgram);
-
-		//glDrawArrays(GL_TRIANGLES, 0 , nrOfVertices);
-
-		//Koniec rysowania 
-		glfwSwapBuffers(window);
-		glFlush();
-
-		glBindVertexArray(0);
-		glUseProgram(0);
-		glActiveTexture(0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		Game.Update();
+		Game.Render();
 	}
-
-	//Zwalnianie pamięci
-	glfwDestroyWindow(window);
-	glfwTerminate();
-
-	system("Pause");
-
 	return 0;
 }

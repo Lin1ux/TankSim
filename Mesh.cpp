@@ -2,34 +2,6 @@
 
 void Mesh::InitVAO(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* indexArray, const unsigned& nrOfIndicies)
 {
-	/*this->nrOfVertices = nrOfVertices;
-	this->nrOfIndices = nrOfIndicies;
-
-	//Init VAO
-	glCreateVertexArrays(1, &this->VAO);
-	glBindVertexArray(VAO);
-
-	//Vertex buffer object
-	glGenBuffers(1, &this->VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	glBufferData(GL_ARRAY_BUFFER, this->nrOfVertices * sizeof(Vertex), vertexArray, GL_STATIC_DRAW);
-
-	//Gen EBO
-	glGenBuffers(1, &this->EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nrOfIndices * sizeof(Vertex), indexArray, GL_STATIC_DRAW);
-	//Position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));
-	glEnableVertexAttribArray(0);
-	//Color
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
-	glEnableVertexAttribArray(1);
-	//Tex Cord
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcord));
-	glEnableVertexAttribArray(2);
-
-	glBindVertexArray(0);*/
-
 	this->nrOfVertices = nrOfVertices;
 	this->nrOfIndices = nrOfIndicies;
 
@@ -48,6 +20,47 @@ void Mesh::InitVAO(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* in
 	glGenBuffers(1, &this->EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nrOfIndices * sizeof(GLuint), indexArray, GL_STATIC_DRAW);
+
+	//Format Zapisywania Vertexów
+
+	//GLuint attribLoc = glGetAttribLocation(coreProgram,"vertex_position");
+	//Position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));
+	glEnableVertexAttribArray(0);
+	//Color
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
+	glEnableVertexAttribArray(1);
+	//texCord
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texcord));
+	glEnableVertexAttribArray(2);
+	//Normal
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
+	glEnableVertexAttribArray(2);
+
+	//Bind VAO
+	glBindVertexArray(0);
+}
+
+void Mesh::InitVAO(Primitive* primitive)
+{
+	this->nrOfVertices = primitive->getNrOfVertices();
+	this->nrOfIndices = primitive->getNrOfIndices();
+
+	//£adowanie do karty graficznej
+	glCreateVertexArrays(1, &this->VAO);
+	glBindVertexArray(this->VAO);
+
+	//Buffor Vertexów
+	//VBO
+	glGenBuffers(1, &this->VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+	glBufferData(GL_ARRAY_BUFFER, this->nrOfVertices * sizeof(Vertex), primitive->getVertices(), GL_STATIC_DRAW); //GL_DYNAMIC_DRAW - jeœli zmieniane s¹ dane
+
+	//Buffor elementów
+	//EBO
+	glGenBuffers(1, &this->EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nrOfIndices * sizeof(GLuint), primitive->getIndices(), GL_STATIC_DRAW);
 
 	//Format Zapisywania Vertexów
 
@@ -97,6 +110,22 @@ Mesh::Mesh(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* indexArray
 
 	this->UpdateModelMatrix();
 	
+	std::cout << "DONE\n";
+}
+
+Mesh::Mesh(Primitive* primitive, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
+{
+	this->position = position;
+	this->rotation = rotation;
+	this->scale = scale;
+
+	std::cout << "MESH\n";
+
+	this->InitVAO(primitive);
+	std::cout << "MATRIX\n";
+
+	this->UpdateModelMatrix();
+
 	std::cout << "DONE\n";
 }
 

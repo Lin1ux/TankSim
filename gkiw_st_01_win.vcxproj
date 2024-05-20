@@ -22,6 +22,7 @@
     <ClInclude Include="allmodels.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="cube.h" />
+    <ClInclude Include="game.h" />
     <ClInclude Include="HullTank.h" />
     <ClInclude Include="Libs.h" />
     <ClInclude Include="lodepng.h" />
@@ -32,6 +33,7 @@
     <ClInclude Include="myCube.h" />
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="Primitive.h" />
+    <ClInclude Include="Quads.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shaderprogram.h" />
@@ -44,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cube.cpp" />
+    <ClCompile Include="game.cpp" />
     <ClCompile Include="HullTank.cpp" />
     <ClCompile Include="Libs.cpp" />
     <ClCompile Include="lodepng.cpp" />
@@ -53,6 +56,8 @@
     <ClCompile Include="model.cpp" />
     <ClCompile Include="Model2.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
+    <ClCompile Include="Primitive.cpp" />
+    <ClCompile Include="Quads.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shaderprogram.cpp" />
     <ClCompile Include="sphere.cpp" />

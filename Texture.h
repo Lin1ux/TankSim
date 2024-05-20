@@ -14,18 +14,17 @@ class Texture
 private:
 	GLuint id;
 	unsigned int type;
-	GLint textureUnit;
+
 	GLuint readTexture(const char* filename);
 
 public:
 
 	//Konstruktor
-	Texture(const char* filename,GLenum type,GLint texture_unit);
+	Texture(const char* filename,GLenum type);
 	//Dekonstruktor
 	~Texture();
 	GLuint getID() const;
-	GLuint getTextureUnit() const;
-	void bind();
+	void bind(const GLint texture_unit);
 	void unbind();
 };
 

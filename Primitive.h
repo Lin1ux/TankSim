@@ -16,71 +16,23 @@ private:
 	std::vector<GLuint> indices;
 
 public:
-	Primitive()
-	{
-
-	}
-	virtual ~Primitive()
-	{
-
-	}
+	Primitive();
+	virtual ~Primitive();
 
 	void set(const Vertex* vertices,
 		const unsigned nrOfVertices,
 		const GLuint* indices,
-		const unsigned nrOfIndices)
-	{
-		for (size_t i = 0; i < nrOfVertices; i++)
-		{
-			this->vertices.push_back(vertices[i]);
-		}
-		for (size_t i = 0; i < nrOfIndices; i++)
-		{
-			this->indices.push_back(indices[i]);
-		}
-	}
+		const unsigned nrOfIndices);
 
-	inline Vertex* getVertices()
-	{
-		return this->vertices.data();
-	}
-	inline GLuint* getIndices()
-	{
-		return this->indices.data();
-	}
-	inline const unsigned getNrOfVertices()
-	{
-		return this->vertices.size();
-	}
-	inline const unsigned getNrOfIndices()
-	{
-		return this->indices.size();
-	}
+
+	Vertex* getVertices();
+	GLuint* getIndices();
+	const unsigned getNrOfVertices();
+	const unsigned getNrOfIndices();
 };
 
-class Quad : public Primitive
+/*class Quad : public Primitive
 {
 public:
-	Quad() : Primitive()
-	{
-		Vertex vertices[] =
-		{
-			//Position						//Color							//Tex Cord					//Normals
-			glm::vec3(-0.5f,0.5f,0.0f),		glm::vec3(1.0f,0.0f,0.0f),		glm::vec2(0.0f,0.0f),		glm::vec3(-0.5f,0.5f,0.5f),
-			glm::vec3(-0.5f,-0.5f,0.0f),	glm::vec3(0.0f,1.0f,0.0f),		glm::vec2(0.f,0.0f),		glm::vec3(-0.5f,0.5f,0.5f),
-			glm::vec3(0.5f,-0.5f,0.0f),		glm::vec3(0.0f,0.0f,1.0f),		glm::vec2(0.0f,1.0f),		glm::vec3(-0.5f,0.5f,0.5f),
-			glm::vec3(0.5f,0.5f,0.0f),		glm::vec3(1.0f,1.0f,0.0f),		glm::vec2(0.0f,0.0f),		glm::vec3(-0.5f,0.5f,0.5f)
-		};
-		unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
-
-		GLuint indices[] =
-		{
-			0, 1, 2,	//Triangle 1
-			0, 2, 3		//Triangle 2
-		};
-		unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
-
-		this->set(vertices, nrOfVertices, indices, nrOfIndices);
-		
-	}
-};
+	Quad();
+};*/

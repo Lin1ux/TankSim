@@ -20,3 +20,6 @@
 #include "Texture.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "Primitive.h"
+#include "Quads.h"
+

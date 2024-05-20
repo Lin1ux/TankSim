@@ -13,6 +13,7 @@
 #include"Shader.h"
 #include"Texture.h"
 #include"Material.h"
+#include"Primitive.h"
 
 
 class Mesh
@@ -36,9 +37,13 @@ private:
 		const unsigned& nrOfVertices,
 		GLuint* indexArray,
 		const unsigned& nrOfIndicies);
+	
+	void InitVAO(Primitive* primitive);
+
 
 	void UpdateUniforms(shader* shader);
 	void UpdateModelMatrix();
+
 
 public:
 	Mesh(
@@ -46,6 +51,13 @@ public:
 		const unsigned& nrOfVertices,
 		GLuint* indexArray,
 		const unsigned& nrOfIndicies,
+
+		glm::vec3 position = glm::vec3(0.0f),
+		glm::vec3 rotation = glm::vec3(0.0f),
+		glm::vec3 scale = glm::vec3(1.0f));
+
+	Mesh(
+		Primitive* primitive,
 
 		glm::vec3 position = glm::vec3(0.0f),
 		glm::vec3 rotation = glm::vec3(0.0f),

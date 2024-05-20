@@ -1,10 +1,9 @@
 #include "Texture.h"
 
 //Konstruktor
-Texture::Texture(const char* filename, GLenum type, GLint texture_unit)
+Texture::Texture(const char* filename, GLenum type)
 {
 	this->type = type;
-	this->textureUnit = texture_unit;
 	this->id = readTexture(filename);
 }
 
@@ -18,14 +17,10 @@ GLuint Texture::getID() const
 {
 	return this->id;
 }
-GLuint Texture::getTextureUnit() const
-{
-	return this->textureUnit;
-}
 //Bindowanie tekstury
-void Texture::bind()
+void Texture::bind(const GLint texture_unit)
 {
-	glActiveTexture(GL_TEXTURE0 + this->textureUnit);
+	glActiveTexture(GL_TEXTURE0 + texture_unit);
 	glBindTexture(this->type, this->id);
 }
 //Od bindowuje tekstury
