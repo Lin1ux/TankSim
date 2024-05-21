@@ -17,10 +17,12 @@ void Mesh::InitVAO(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* in
 
 	//Buffor elementów
 	//EBO
-	glGenBuffers(1, &this->EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nrOfIndices * sizeof(GLuint), indexArray, GL_STATIC_DRAW);
-
+	if (this->nrOfIndices > 0)
+	{
+		glGenBuffers(1, &this->EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nrOfIndices * sizeof(GLuint), indexArray, GL_STATIC_DRAW);
+	}
 	//Format Zapisywania Vertexów
 
 	//GLuint attribLoc = glGetAttribLocation(coreProgram,"vertex_position");
@@ -58,10 +60,12 @@ void Mesh::InitVAO(Primitive* primitive)
 
 	//Buffor elementów
 	//EBO
-	glGenBuffers(1, &this->EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nrOfIndices * sizeof(GLuint), primitive->getIndices(), GL_STATIC_DRAW);
-
+	if (this->nrOfIndices > 0)
+	{
+		glGenBuffers(1, &this->EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nrOfIndices * sizeof(GLuint), primitive->getIndices(), GL_STATIC_DRAW);
+	}
 	//Format Zapisywania Vertexów
 
 	//GLuint attribLoc = glGetAttribLocation(coreProgram,"vertex_position");
@@ -133,7 +137,11 @@ Mesh::~Mesh()
 {
 	glDeleteVertexArrays(1, &this->VAO);
 	glDeleteBuffers(1, &this->VBO);
-	glDeleteBuffers(1, &this->EBO);
+
+	if (this->nrOfIndices > 0)
+	{
+		glDeleteBuffers(1, &this->EBO);
+	}
 }
 
 void Mesh::SetPosition(const glm::vec3 position)

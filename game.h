@@ -4,7 +4,7 @@
 
 //ENUMS
 enum shader_enums {SHADER_CORE_PROGRAM = 0};
-enum texture_enums {TEXTURE_BRICKS0 = 0, TEXTURE_STONE1};
+enum texture_enums {TEXTURE_BRICKS0 = 0, TEXTURE_BRICKS_SPEC, TEXTURE_STONE1};
 enum material_enums {MATERIAL_1 = 0};
 enum mesh_enums {MESH_QUAD = 0};
 

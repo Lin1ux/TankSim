@@ -83,6 +83,8 @@ void Game::InitTextures()
 {
 	//Texture 0
 	this->Textures.push_back(new Texture("Textures/bricks.png", GL_TEXTURE_2D));
+	
+	this->Textures.push_back(new Texture("Textures/bricks_specular.png", GL_TEXTURE_2D));
 
 	//Texture 1
 	this->Textures.push_back(new Texture ("Textures/stone-wall.png", GL_TEXTURE_2D));
@@ -96,15 +98,17 @@ void Game::InitMaterials()
 
 void Game::InitMeshes()
 {
-	Quad newQuad = Quad();
+	//Piramid newQuad = Piramid();
+	Piramid newPiramid = Piramid();
+	//newPiramid = new Piramid();
 
-	this->Meshes.push_back(new Mesh(&newQuad,
+	this->Meshes.push_back(new Mesh(&newPiramid,
 		glm::vec3(0.0f),
 		glm::vec3(0.0f),
 		glm::vec3(2.0f)
 	));
 
-	newQuad = Quad();
+	Quad newQuad = Quad();
 
 	this->Meshes.push_back(new Mesh(&newQuad,
 		glm::vec3(0.0f),
@@ -136,7 +140,7 @@ void Game::UpdateUniforms()
 	//wysy³anie shaderów do karty graficznej
 	//this->Shaders[SHADER_CORE_PROGRAM]->set1i(0, "texture0");
 	//this->Shaders[SHADER_CORE_PROGRAM]->set1i(1, "texture1");
-	this->Materials[MATERIAL_1]->sendToShader(*this->Shaders[SHADER_CORE_PROGRAM]);
+	//this->Materials[MATERIAL_1]->sendToShader(*this->Shaders[SHADER_CORE_PROGRAM]);
 
 	//Pozwala na zmianê wielkoœci okna
 
@@ -251,6 +255,8 @@ void Game::Render()
 	//Aktualizowanie uniformów (wysy³anie do karty graficznej
 	this->UpdateUniforms();
 
+	this->Materials[MATERIAL_1]->sendToShader(*this->Shaders[SHADER_CORE_PROGRAM]);
+
 	this->Shaders[SHADER_CORE_PROGRAM]->use();
 
 	//Aktywacja textur
@@ -261,8 +267,8 @@ void Game::Render()
 	this->Meshes[MESH_QUAD]->render(this->Shaders[SHADER_CORE_PROGRAM]);
 	
 	//Aktywacja textur
-	this->Textures[TEXTURE_BRICKS0]->bind(1);	//Diffuse texture
-	this->Textures[TEXTURE_STONE1]->bind(0);	//Specular texture
+	this->Textures[TEXTURE_BRICKS0]->bind(0);	//Diffuse texture
+	this->Textures[TEXTURE_BRICKS_SPEC]->bind(1);	//Specular texture
 	
 	this->Meshes[1]->render(this->Shaders[SHADER_CORE_PROGRAM]);
 

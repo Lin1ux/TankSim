@@ -32,6 +32,7 @@
     <ClInclude Include="Model2.h" />
     <ClInclude Include="myCube.h" />
     <ClInclude Include="OBJLoader.h" />
+    <ClInclude Include="Piramid.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Quads.h" />
     <ClInclude Include="resource.h" />
@@ -56,6 +57,7 @@
     <ClCompile Include="model.cpp" />
     <ClCompile Include="Model2.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
+    <ClCompile Include="Piramid.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Quads.cpp" />
     <ClCompile Include="shader.cpp" />

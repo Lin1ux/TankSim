@@ -22,4 +22,5 @@
 #include "Mesh.h"
 #include "Primitive.h"
 #include "Quads.h"
+#include "Piramid.h"
 

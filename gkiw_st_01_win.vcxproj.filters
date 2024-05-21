@@ -87,6 +87,9 @@
     <ClInclude Include="game.h">
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="Piramid.h">
+      <Filter>Pliki naglówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cube.cpp">
@@ -150,6 +153,9 @@
       <Filter>Pliki zródlowe</Filter>
     </ClCompile>
     <ClCompile Include="game.cpp">
+      <Filter>Pliki zródlowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Piramid.cpp">
       <Filter>Pliki zródlowe</Filter>
     </ClCompile>
   </ItemGroup>
