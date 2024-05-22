@@ -57,6 +57,8 @@ void Game::InitOpenGLOptions()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	//GL_LINE
+	//Input
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);	//Wy³¹czenie kursora
 }
 
 void Game::InitMatrices()
@@ -142,9 +144,13 @@ void Game::UpdateUniforms()
 	//this->Shaders[SHADER_CORE_PROGRAM]->set1i(1, "texture1");
 	//this->Materials[MATERIAL_1]->sendToShader(*this->Shaders[SHADER_CORE_PROGRAM]);
 
-	//Pozwala na zmianê wielkoœci okna
+	//Aktualizacja macierzy kamery
+	this->ViewMatrix = glm::lookAt(this->camPosition, this->camPosition + this->camFront, this->worldUp);
+	this->Shaders[SHADER_CORE_PROGRAM]->setMat4fv(this->ViewMatrix, "ViewMatrix");
 
+	//Pozwala na zmianê wielkoœci okna
 	glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
+
 
 	this->ProjectionMatrix = glm::perspective
 	(
@@ -154,7 +160,7 @@ void Game::UpdateUniforms()
 		this->farPlane
 	);
 
-	this->Shaders[SHADER_CORE_PROGRAM]->setMat4fv(ProjectionMatrix, "ProjectionMatrix");
+	this->Shaders[SHADER_CORE_PROGRAM]->setMat4fv(this->ProjectionMatrix, "ProjectionMatrix");
 
 }
 
@@ -181,6 +187,18 @@ Game::Game(const char* title,
 	this->FOV = 90.0f;			//Pole widzenia
 	this->nearPlane = 0.1f;
 	this->farPlane = 1000.0f;	//Zasiêg rysowania
+
+	this->dt = 0.0f;
+	this->curTime = 0.0f;
+	this->lastTime = 0.0f;
+
+	this->lastMouseX = 0.0f;
+	this->lastMouseY = 0.0f;
+	this->mouseX = 0.0f;
+	this->mouseY = 0.0f;
+	this->mouseOffsetX = 0.0f;
+	this->mouseOffsetY = 0.0f;
+	this->firstMouse = true;
 
 
 	this->InitGLFW();
@@ -235,18 +253,94 @@ void Game::setWindowShouldClose()
 	glfwSetWindowShouldClose(this->window, GLFW_TRUE);
 }
 
+void Game::updateDt()
+{
+	this->curTime = static_cast<float>(glfwGetTime());
+	this->dt = this->curTime - this->lastTime;
+	this->lastTime = this->curTime;
+}
+
+void Game::UpdateKeyboardInput()
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+	//Kamera
+	if (glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		this->camPosition.z -= 0.05f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		this->camPosition.z += 0.05f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		this->camPosition.x -= 0.05f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		this->camPosition.x += 0.05f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_C) == GLFW_PRESS)
+	{
+		this->camPosition.y -= 0.05f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		this->camPosition.y += 0.05f;
+	}
+}
+
+void Game::UpdateMouseInput()
+{
+	//Pobieranie kursora z okna i zapisanie pozycji w mouseX i mouseY
+	glfwGetCursorPos(this->window, &this->mouseX, &this->mouseY);
+	
+	//Sprawdzenie czy kamera ruszy³a siê pierwszy raz
+	if (this->firstMouse)
+	{
+		//Ustawianie ostatniej pozycji kamery
+		this->lastMouseX = this->mouseX;
+		this->lastMouseY = this->mouseY;
+		this->firstMouse = false;
+	}
+
+	//Liczenie offsetu (zmiany pozycji kamery)
+	this->mouseOffsetX = this->mouseX - this->lastMouseX;
+	this->mouseOffsetY = this->lastMouseY - this->mouseY; //Y jest odwrócone
+	
+	//Ustawienie ostatnich wspó³rzêdnych X i Y
+	this->lastMouseX = this->mouseX;
+	this->lastMouseY = this->mouseY;
+
+}
+
+void Game::UpdateInput()
+{
+	//Wyjœcie
+	glfwPollEvents();
+	this->UpdateKeyboardInput();
+	this->UpdateMouseInput();
+	
+}
+
 void Game::Update()
 {
 	//Aktualizacja wydarzeñ (np wy³¹czanie okna X)
-	glfwPollEvents();
+	this->updateDt();
+	this->UpdateInput();
+
 }
 
 void Game::Render()
 {
 
 	//Aktualizowanie (Update)
-	updateInput(window);
-	updateInput(window, *this->Meshes[MESH_QUAD]);
+	//updateInput(window);
+	
+	//updateInput(window, *this->Meshes[MESH_QUAD]);
 
 	//Czyszczenie ekranu i buforów
 	glClearColor(0.1f, 0.1f, 0.3f, 1.0f);
@@ -288,7 +382,9 @@ void Game::FrameBufferResize(GLFWwindow* window, int fbW, int fbH)
 {
 	glViewport(0, 0, fbW, fbH);
 }
-void Game::updateInput(GLFWwindow* window)
+
+
+/*void Game::updateInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
@@ -331,3 +427,4 @@ void Game::updateInput(GLFWwindow* window, Mesh& mesh)
 		mesh.Scale(glm::vec3(-0.01 * glfwGetTime()));
 	}
 }
+*/

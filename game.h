@@ -21,6 +21,20 @@ private:
 	const int GL_VERSION_MAJOR;
 	const int GL_VERSION_MINOR;
 
+	//Delta time
+	float dt;
+	float curTime;
+	float lastTime;
+
+	//Wejœcie Myszki
+	double lastMouseX;
+	double lastMouseY;
+	double mouseX;
+	double mouseY;
+	double mouseOffsetX;
+	double mouseOffsetY;
+	bool firstMouse;
+
 	//Macierze
 	glm::mat4 ViewMatrix;
 	glm::vec3 camPosition;
@@ -70,12 +84,16 @@ public:
 
 	void setWindowShouldClose();
 
+	void updateDt();
+	void UpdateKeyboardInput();
+	void UpdateMouseInput();
+	void UpdateInput();
 	void Update();
 	void Render();
 
 
 	static void FrameBufferResize(GLFWwindow* window, int fbW, int fbH);
-	static void updateInput(GLFWwindow* window);
-	static void updateInput(GLFWwindow* window, Mesh& mesh);
+	//static void updateInput(GLFWwindow* window);
+	//static void updateInput(GLFWwindow* window, Mesh& mesh);
 };
 
