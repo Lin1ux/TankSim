@@ -35,6 +35,9 @@ private:
 	double mouseOffsetY;
 	bool firstMouse;
 
+	//Kamera
+	Camera camera;
+
 	//Macierze
 	glm::mat4 ViewMatrix;
 	glm::vec3 camPosition;
@@ -50,11 +53,11 @@ private:
 	std::vector<shader*> Shaders;
 	//Tekstury
 	std::vector<Texture*> Textures;
-	//Materials
+	//Materia³y
 	std::vector<Material*> Materials;
-	//Meshes
-	std::vector<Mesh*> Meshes;
-	//Œwiat³¹
+	//Modele
+	std::vector<Model*> Models;
+	//Œwiat³a
 	std::vector<glm::vec3*> Lights;
 
 	void InitGLFW();
@@ -65,7 +68,7 @@ private:
 	void InitShader();
 	void InitTextures();
 	void InitMaterials();
-	void InitMeshes();
+	void InitModels();
 	void InitLights();
 	void InitUniforms();
 

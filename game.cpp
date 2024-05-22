@@ -98,25 +98,52 @@ void Game::InitMaterials()
 	this->Materials.push_back(new Material(glm::vec3(1.0f), glm::vec3(0.5f), glm::vec3(5.0f), 0, 1));
 }
 
-void Game::InitMeshes()
+void Game::InitModels()
 {
-	//Piramid newQuad = Piramid();
+	std::vector<Mesh*> Meshes;
+	//Inicjalizacja meshy w modelu
 	Piramid newPiramid = Piramid();
-	//newPiramid = new Piramid();
+	Piramid newPiramid2 = Piramid();
 
-	this->Meshes.push_back(new Mesh(&newPiramid,
+	Meshes.push_back(new Mesh(&newPiramid,
 		glm::vec3(0.0f),
 		glm::vec3(0.0f),
-		glm::vec3(2.0f)
+		glm::vec3(0.0f),
+		glm::vec3(1.0f)
+	));
+	Meshes.push_back(new Mesh(&newPiramid,
+		glm::vec3(1.0f,1.0f,0.0f),
+		glm::vec3(1.0f,0.5f,1.0f),
+		glm::vec3(1.0f),
+		glm::vec3(1.0f)
+	));
+	//Inicjalizacja modelu
+	this->Models.push_back(new Model(
+		glm::vec3(0.0f),
+		this->Materials[MATERIAL_1],
+		this->Textures[TEXTURE_BRICKS0],
+		this->Textures[TEXTURE_BRICKS_SPEC],
+		Meshes
 	));
 
-	Quad newQuad = Quad();
-
-	this->Meshes.push_back(new Mesh(&newQuad,
-		glm::vec3(0.0f),
-		glm::vec3(0.0f),
-		glm::vec3(2.0f)
+	this->Models.push_back(new Model(
+		glm::vec3(2.0f,0.0f,0.0f),
+		this->Materials[MATERIAL_1],
+		this->Textures[TEXTURE_BRICKS0],
+		this->Textures[TEXTURE_BRICKS_SPEC],
+		Meshes
 	));
+
+	this->Models.push_back(new Model(
+		glm::vec3(-2.0f,0.0f,0.0f),
+		this->Materials[MATERIAL_1],
+		this->Textures[TEXTURE_BRICKS0],
+		this->Textures[TEXTURE_BRICKS_SPEC],
+		Meshes
+	));
+	
+	for (auto*& i : Meshes)
+		delete i;
 }
 
 //Pozycje œwiate³
@@ -134,7 +161,7 @@ void Game::InitUniforms()
 
 	//Pozycja œwiat³a
 	this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(*this->Lights[0], "lightPos0");
-	this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(this->camPosition, "cameraPos");
+	//this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(this->camPosition, "cameraPos");
 }
 
 void Game::UpdateUniforms()
@@ -145,8 +172,10 @@ void Game::UpdateUniforms()
 	//this->Materials[MATERIAL_1]->sendToShader(*this->Shaders[SHADER_CORE_PROGRAM]);
 
 	//Aktualizacja macierzy kamery
-	this->ViewMatrix = glm::lookAt(this->camPosition, this->camPosition + this->camFront, this->worldUp);
+	this->ViewMatrix = this->camera.GetViewMatrix();
+	
 	this->Shaders[SHADER_CORE_PROGRAM]->setMat4fv(this->ViewMatrix, "ViewMatrix");
+	this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(this->camera.GetPosition(), "cameraPos");
 
 	//Pozwala na zmianê wielkoœci okna
 	glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
@@ -171,8 +200,8 @@ Game::Game(const char* title,
 	: WINDOW_WIDTH(width),
 	WINDOW_HEIGHT(height),
 	GL_VERSION_MAJOR(GLVerMaj),
-	GL_VERSION_MINOR(GLVerMin)
-
+	GL_VERSION_MINOR(GLVerMin),
+	camera(glm::vec3(0.0f,0.0f,1.0f),glm::vec3(0.0f,0.0f,1.0f),glm::vec3(0.0f,1.0f,0.0f))
 {
 	//Init variables
 	this->window = nullptr;
@@ -209,7 +238,7 @@ Game::Game(const char* title,
 	this->InitShader();
 	this->InitTextures();
 	this->InitMaterials();
-	this->InitMeshes();
+	this->InitModels();
 	this->InitLights();
 	this->InitUniforms();
 }
@@ -232,16 +261,15 @@ Game::~Game()
 	{
 		delete this->Materials[i];
 	}
-	for (size_t i = 0; i < this->Meshes.size(); i++)
+	for (size_t i = 0; i < this->Models.size(); i++)
 	{
-		delete this->Meshes[i];
+		delete this->Models[i];
 	}
 	for (size_t i = 0; i < this->Lights.size(); i++)
 	{
 		delete this->Lights[i];
 	}
 }
-
 
 int Game::getWindowShouldClose()
 {
@@ -269,19 +297,19 @@ void Game::UpdateKeyboardInput()
 	//Kamera
 	if (glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		this->camPosition.z -= 0.05f;
+		this->camera.Move(this->dt, FORWARD);
 	}
 	if (glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		this->camPosition.z += 0.05f;
+		this->camera.Move(this->dt, BACKWARD);
 	}
 	if (glfwGetKey(this->window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		this->camPosition.x -= 0.05f;
+		this->camera.Move(this->dt, LEFT);
 	}
 	if (glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		this->camPosition.x += 0.05f;
+		this->camera.Move(this->dt, RIGHT);
 	}
 	if (glfwGetKey(this->window, GLFW_KEY_C) == GLFW_PRESS)
 	{
@@ -323,6 +351,7 @@ void Game::UpdateInput()
 	glfwPollEvents();
 	this->UpdateKeyboardInput();
 	this->UpdateMouseInput();
+	this->camera.UpdateInput(dt, -1, this->mouseOffsetX, this->mouseOffsetY);
 	
 }
 
@@ -332,6 +361,11 @@ void Game::Update()
 	this->updateDt();
 	this->UpdateInput();
 
+	//this->Models[0]->Rotate(glm::vec3(0.0f, 0.2f, 0.0f));
+	//this->Models[1]->Rotate(glm::vec3(0.2f, 0.0f, 0.0f));
+	this->Models[0]->Rotate(glm::vec3(0.0f, 0.1f, 0.0f));
+	this->Models[1]->Rotate(glm::vec3(0.1f, 0.0f, 0.0f));
+	this->Models[2]->Rotate(glm::vec3(0.0f, -0.1f, 0.0f));
 }
 
 void Game::Render()
@@ -349,22 +383,11 @@ void Game::Render()
 	//Aktualizowanie uniformów (wysy³anie do karty graficznej
 	this->UpdateUniforms();
 
-	this->Materials[MATERIAL_1]->sendToShader(*this->Shaders[SHADER_CORE_PROGRAM]);
-
-	this->Shaders[SHADER_CORE_PROGRAM]->use();
-
-	//Aktywacja textur
-	this->Textures[TEXTURE_BRICKS0]->bind(0);	//Diffuse texture
-	this->Textures[TEXTURE_STONE1]->bind(1);	//Specular texture
-
-	//Rysowanie
-	this->Meshes[MESH_QUAD]->render(this->Shaders[SHADER_CORE_PROGRAM]);
-	
-	//Aktywacja textur
-	this->Textures[TEXTURE_BRICKS0]->bind(0);	//Diffuse texture
-	this->Textures[TEXTURE_BRICKS_SPEC]->bind(1);	//Specular texture
-	
-	this->Meshes[1]->render(this->Shaders[SHADER_CORE_PROGRAM]);
+	//Renderowanie modeli
+	for (auto& i : this->Models)
+	{
+		i->Render(this->Shaders[SHADER_CORE_PROGRAM]);
+	}
 
 	//Koniec rysowania 
 	glfwSwapBuffers(window);

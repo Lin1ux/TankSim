@@ -21,22 +21,10 @@
     <ClInclude Include="constants.h">
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="cube.h">
-      <Filter>Pliki naglówkowe</Filter>
-    </ClInclude>
     <ClInclude Include="lodepng.h">
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
     <ClInclude Include="model.h">
-      <Filter>Pliki naglówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="sphere.h">
-      <Filter>Pliki naglówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="teapot.h">
-      <Filter>Pliki naglówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="torus.h">
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
     <ClInclude Include="shaderprogram.h">
@@ -46,9 +34,6 @@
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Tank.h">
-      <Filter>Pliki naglówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="HullTank.h">
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
@@ -90,11 +75,11 @@
     <ClInclude Include="Piramid.h">
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Pliki naglówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cube.cpp">
-      <Filter>Pliki zródlowe</Filter>
-    </ClCompile>
     <ClCompile Include="lodepng.cpp">
       <Filter>Pliki zródlowe</Filter>
     </ClCompile>
@@ -107,19 +92,7 @@
     <ClCompile Include="shaderprogram.cpp">
       <Filter>Pliki zródlowe</Filter>
     </ClCompile>
-    <ClCompile Include="sphere.cpp">
-      <Filter>Pliki zródlowe</Filter>
-    </ClCompile>
-    <ClCompile Include="teapot.cpp">
-      <Filter>Pliki zródlowe</Filter>
-    </ClCompile>
-    <ClCompile Include="torus.cpp">
-      <Filter>Pliki zródlowe</Filter>
-    </ClCompile>
     <ClCompile Include="Tank.cpp">
-      <Filter>Pliki zródlowe</Filter>
-    </ClCompile>
-    <ClCompile Include="HullTank.cpp">
       <Filter>Pliki zródlowe</Filter>
     </ClCompile>
     <ClCompile Include="Vertex.cpp">
@@ -156,6 +129,9 @@
       <Filter>Pliki zródlowe</Filter>
     </ClCompile>
     <ClCompile Include="Piramid.cpp">
+      <Filter>Pliki zródlowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
       <Filter>Pliki zródlowe</Filter>
     </ClCompile>
   </ItemGroup>

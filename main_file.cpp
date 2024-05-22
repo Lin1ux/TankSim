@@ -3,8 +3,8 @@
 
 //#include "Libs.h"
 
-const int WindowWidth = 1600;
-const int WindowHeight = 900;
+const int WindowWidth = 1920;
+const int WindowHeight = 1080;
 
 //Kamera
 glm::vec3 CamPosition = glm::vec3(0.0f, 1.0f, -5.0f);			//Pozycja kamery
@@ -326,7 +326,7 @@ GLFWwindow* createWindow(
 //Główny program
 int main()
 {
-	Game Game("Tank Simulator",1600,900,3,3,false);
+	Game Game("Tank Simulator", WindowWidth, WindowHeight,3,3,false);
 
 	//Pętla Gry
 	while (!Game.getWindowShouldClose())

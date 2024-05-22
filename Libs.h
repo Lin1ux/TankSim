@@ -23,4 +23,6 @@
 #include "Primitive.h"
 #include "Quads.h"
 #include "Piramid.h"
+#include "Camera.h"
+#include "model.h"
 

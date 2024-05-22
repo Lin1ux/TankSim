@@ -1,32 +1,74 @@
-/*
-Niniejszy program jest wolnym oprogramowaniem; możesz go
-rozprowadzać dalej i / lub modyfikować na warunkach Powszechnej
-Licencji Publicznej GNU, wydanej przez Fundację Wolnego
-Oprogramowania - według wersji 2 tej Licencji lub(według twojego
-wyboru) którejś z późniejszych wersji.
-
-Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on
-użyteczny - jednak BEZ JAKIEJKOLWIEK GWARANCJI, nawet domyślnej
-gwarancji PRZYDATNOŚCI HANDLOWEJ albo PRZYDATNOŚCI DO OKREŚLONYCH
-ZASTOSOWAŃ.W celu uzyskania bliższych informacji sięgnij do
-Powszechnej Licencji Publicznej GNU.
-
-Z pewnością wraz z niniejszym programem otrzymałeś też egzemplarz
-Powszechnej Licencji Publicznej GNU(GNU General Public License);
-jeśli nie - napisz do Free Software Foundation, Inc., 59 Temple
-Place, Fifth Floor, Boston, MA  02110 - 1301  USA
-*/
-
 #include "model.h"
 
-namespace Models 
+void Model::UpdateUniforms()
 {
-	void Model::drawWire(bool smooth) 
+}
+
+Model::Model(glm::vec3 position, Material* material, Texture* overrideTexDiff, Texture* overrideTexSpec, std::vector<Mesh*> meshes)
+{
+	this->position = position;
+	this->material = material;
+	this->overrideTextureDiffuse = overrideTexDiff;
+	this->overrideTextureSpecular = overrideTexSpec;
+	for (auto* i : meshes)
 	{
-		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-		drawSolid(smooth);
-
-		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		this->meshes.push_back(new Mesh(*i));
 	}
+
+	for (auto*& i : this->meshes)
+	{
+		i->Move(this->position);
+		i->SetOrigin(this->position);
+	}
+}
+
+Model::~Model()
+{
+	for (auto*& i : this->meshes)
+	{
+		delete i;
+	}
+}
+
+void Model::Rotate(const glm::vec3 rotation)
+{
+	for (auto& i : this->meshes)
+	{
+		i->Rotate(rotation);
+	}
+}
+
+void Model::Update()
+{
+}
+
+void Model::Render(shader* shader)
+{
+	this->UpdateUniforms();
+
+	//Aktualizowanie uniformów (wysyłanie do karty graficznej
+	this->UpdateUniforms();
+
+	this->material->sendToShader(*shader);
+
+	shader->use();
+
+	//Aktywacja textur
+	this->overrideTextureDiffuse->bind(0);	//Diffuse texture
+	this->overrideTextureSpecular->bind(1);	//Specular texture
+
+	//Rysowanie
+	for (auto& i : this->meshes)
+	{
+		i->render(shader);
+
+	}
+
+
+	//Aktywacja textur
+	//this->Textures[TEXTURE_BRICKS0]->bind(0);	//Diffuse texture
+	//this->Textures[TEXTURE_BRICKS_SPEC]->bind(1);	//Specular texture
+
+	//this->Meshes[1]->render(this->Shaders[SHADER_CORE_PROGRAM]);
+
 }

@@ -20,10 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="allmodels.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="constants.h" />
-    <ClInclude Include="cube.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="HullTank.h" />
     <ClInclude Include="Libs.h" />
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="Material.h" />
@@ -38,17 +37,13 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shaderprogram.h" />
-    <ClInclude Include="sphere.h" />
     <ClInclude Include="Tank.h" />
-    <ClInclude Include="teapot.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="torus.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cube.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="game.cpp" />
-    <ClCompile Include="HullTank.cpp" />
     <ClCompile Include="Libs.cpp" />
     <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="main_file.cpp" />
@@ -62,11 +57,8 @@
     <ClCompile Include="Quads.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shaderprogram.cpp" />
-    <ClCompile Include="sphere.cpp" />
     <ClCompile Include="Tank.cpp" />
-    <ClCompile Include="teapot.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="torus.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
