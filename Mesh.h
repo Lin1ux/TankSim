@@ -37,6 +37,8 @@ private:
 	glm::vec3 scale;
 	glm::mat4 ModelMatrix;
 
+	bool CanUpdate;
+
 	//void InitVAO(Vertex* vertexArray,
 	//	const unsigned& nrOfVertices,
 	//	GLuint* indexArray,
@@ -75,6 +77,7 @@ public:
 
 
 	//Metody ustawiania
+	void SetModelMatrix(glm::mat4 newMatrix, bool canUpdate);
 	void SetPosition(const glm::vec3 position);
 	void SetOrigin(const glm::vec3 origin);
 	void SetRotation(const glm::vec3 rotation);
@@ -83,6 +86,8 @@ public:
 	void Move(const glm::vec3 position);
 	void Rotate(const glm::vec3 rotation);
 	void Scale(const glm::vec3 scale);
+
+	glm::mat4 GetMatrix();
 
 	void update();
 	void render(shader* shader);/*(Shader* shader )*/;

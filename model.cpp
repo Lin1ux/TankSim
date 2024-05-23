@@ -22,6 +22,28 @@ Model::Model(glm::vec3 position, Material* material, Texture* overrideTexDiff, T
 	}
 }
 
+Model::Model(glm::vec3 position, Material* material, Texture* overrideTexDiff, Texture* overrideTexSpec, const char* objFile)
+{
+	this->position = position;
+	this->material = material;
+	this->overrideTextureDiffuse = overrideTexDiff;
+	this->overrideTextureSpecular = overrideTexSpec;
+
+	std::vector<Vertex> mesh = OBJModel::loadOBJ(objFile);
+	this->meshes.push_back(new Mesh(mesh.data(), mesh.size(), NULL, 0, glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(1.0f)
+	));
+
+	for (auto*& i : this->meshes)
+	{
+		i->Move(this->position);
+		i->SetOrigin(this->position);
+	}
+
+}
+
 Model::~Model()
 {
 	for (auto*& i : this->meshes)
@@ -35,6 +57,30 @@ void Model::Rotate(const glm::vec3 rotation)
 	for (auto& i : this->meshes)
 	{
 		i->Rotate(rotation);
+	}
+}
+
+void Model::Move(const glm::vec3 direction)
+{
+	for (auto& i : this->meshes)
+	{
+		i->Move(direction);
+	}
+}
+
+void Model::SetPosition(const glm::vec3 position)
+{
+	for (auto& i : this->meshes)
+	{
+		i->SetPosition(position);
+	}
+}
+
+void Model::SetMatrix(glm::mat4 Matrix)
+{
+	for (auto& i : this->meshes)
+	{
+		i->SetModelMatrix(Matrix,false);
 	}
 }
 
@@ -54,12 +100,13 @@ void Model::Render(shader* shader)
 	shader->use();
 
 	//Aktywacja textur
-	this->overrideTextureDiffuse->bind(0);	//Diffuse texture
-	this->overrideTextureSpecular->bind(1);	//Specular texture
 
 	//Rysowanie
 	for (auto& i : this->meshes)
 	{
+		this->overrideTextureDiffuse->bind(0);	//Diffuse texture
+		this->overrideTextureSpecular->bind(1);	//Specular texture
+		
 		i->render(shader);
 
 	}

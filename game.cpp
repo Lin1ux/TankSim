@@ -49,8 +49,8 @@ void Game::InitOpenGLOptions()
 	//Opcje OpenGL
 	glEnable(GL_DEPTH_TEST);
 
-	glEnable(GL_CULL_FACE);	//Usuwa nie potrzebne rzeczy
-	glCullFace(GL_BACK);	//Usuwa ty³
+	//glEnable(GL_CULL_FACE);	//Usuwa nie potrzebne rzeczy
+	//glCullFace(GL_FRONT);	//Usuwa ty³
 	glFrontFace(GL_CCW);	//przeciwnie do wskazówek zegara
 
 	glEnable(GL_BLEND);		//Blending colors
@@ -95,14 +95,19 @@ void Game::InitTextures()
 
 void Game::InitMaterials()
 {
-	this->Materials.push_back(new Material(glm::vec3(1.0f), glm::vec3(0.5f), glm::vec3(5.0f), 0, 1));
+	this->Materials.push_back(new Material(glm::vec3(1.0f), glm::vec3(0.5f), glm::vec3(2.0f), 0, 1));
+}
+
+void Game::InitOBJModels()
+{
+
 }
 
 void Game::InitModels()
 {
 	std::vector<Mesh*> Meshes;
 	//Inicjalizacja meshy w modelu
-	Piramid newPiramid = Piramid();
+	/*Piramid newPiramid = Piramid();
 	Piramid newPiramid2 = Piramid();
 
 	Meshes.push_back(new Mesh(&newPiramid,
@@ -116,34 +121,59 @@ void Game::InitModels()
 		glm::vec3(1.0f,0.5f,1.0f),
 		glm::vec3(1.0f),
 		glm::vec3(1.0f)
-	));
+	));*/
 	//Inicjalizacja modelu
+
 	this->Models.push_back(new Model(
-		glm::vec3(0.0f),
+		glm::vec3(3.0f, 0.0f, 0.0f),
 		this->Materials[MATERIAL_1],
 		this->Textures[TEXTURE_BRICKS0],
 		this->Textures[TEXTURE_BRICKS_SPEC],
-		Meshes
+		"TankHull2.obj"
 	));
 
 	this->Models.push_back(new Model(
-		glm::vec3(2.0f,0.0f,0.0f),
+		glm::vec3(3.0f, 0.0f, 0.0f),
 		this->Materials[MATERIAL_1],
 		this->Textures[TEXTURE_BRICKS0],
 		this->Textures[TEXTURE_BRICKS_SPEC],
-		Meshes
+		"Turret.obj"
 	));
 
 	this->Models.push_back(new Model(
-		glm::vec3(-2.0f,0.0f,0.0f),
+		glm::vec3(3.0f, 0.0f, 0.0f),
 		this->Materials[MATERIAL_1],
 		this->Textures[TEXTURE_BRICKS0],
 		this->Textures[TEXTURE_BRICKS_SPEC],
-		Meshes
+		"Tracks.obj"
 	));
 	
+	this->Models.push_back(new Model(
+		glm::vec3(-1.0f, 0.636f, 0.422f),
+		this->Materials[MATERIAL_1],
+		this->Textures[TEXTURE_BRICKS0],
+		this->Textures[TEXTURE_BRICKS_SPEC],
+		"Cannon.obj"
+	));
+
+	for (int i = 10; i < 10; i++)	//Dokoñczyæ zmieniæ (int i = 1)
+	{
+		std::string name = "WheelL" + std::to_string(i) + ".obj";
+		std::cout << name << "\n";
+		this->Models.push_back(new Model(
+			glm::vec3(3.0f, 0.0f, 0.0f),
+			this->Materials[MATERIAL_1],
+			this->Textures[TEXTURE_BRICKS0],
+			this->Textures[TEXTURE_BRICKS_SPEC],
+			name.c_str()
+		));
+	}
+
+
 	for (auto*& i : Meshes)
 		delete i;
+
+
 }
 
 //Pozycje œwiate³
@@ -229,6 +259,16 @@ Game::Game(const char* title,
 	this->mouseOffsetY = 0.0f;
 	this->firstMouse = true;
 
+	this->TankSpeed = 0;
+	this->TankRotate = 0;
+	this->TurretRotate = 0;
+	this->CannonRotate = 0;
+	this->Rotation = 0;
+	this->TurretRotation = 0;
+
+	this->x = 0;
+	this->z = 0;
+
 
 	this->InitGLFW();
 	this->InitWindow(title,resizable);
@@ -238,6 +278,7 @@ Game::Game(const char* title,
 	this->InitShader();
 	this->InitTextures();
 	this->InitMaterials();
+	this->InitOBJModels();
 	this->InitModels();
 	this->InitLights();
 	this->InitUniforms();
@@ -319,6 +360,65 @@ void Game::UpdateKeyboardInput()
 	{
 		this->camPosition.y += 0.05f;
 	}
+	if (glfwGetKey(this->window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		this->TankSpeed = 1.0f;
+	}
+	else if (glfwGetKey(this->window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		this->TankSpeed = -1.0f;
+	}
+	else
+	{
+		this->TankSpeed = 0.0f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		this->TankRotate = 1.0f * dt /3.14*180;
+		//this->TurretRotate = TankRotate;
+		this->Rotation += 1.0f * dt;
+	}
+	else if (glfwGetKey(this->window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		this->TankRotate = -1.0f * dt / 3.14 * 180;
+		//this->TurretRotate = TankRotate;
+		this->Rotation -= 1.0f * dt;
+	}
+	else
+	{
+		this->TankRotate = 0.0f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_KP_4) == GLFW_PRESS)
+	{
+		this->TurretRotate = 1.0f * dt / 3.14 * 180;
+		TurretRotation += 1.0f * dt;
+	}
+	else if (glfwGetKey(this->window, GLFW_KEY_KP_6) == GLFW_PRESS)
+	{
+		this->TurretRotate = -1.0f * dt / 3.14 * 180;
+		TurretRotation -= 1.0f * dt;
+	}
+	else
+	{
+		this->TurretRotate = 0.0f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_KP_5) == GLFW_PRESS)
+	{
+		this->CannonRotate = 1.0f * dt / 3.14 * 180;
+		this->CannonRotation += 1.0f * dt;
+		this->CannonRotation = glm::clamp(CannonRotation, glm::radians(-30.0f), glm::radians(5.0f));
+	}
+	else if (glfwGetKey(this->window, GLFW_KEY_KP_8) == GLFW_PRESS)
+	{
+		this->CannonRotate = -1.0f * dt / 3.14 * 180;
+		this->CannonRotation -= 1.0f * dt;
+		this->CannonRotation = glm::clamp(CannonRotation, glm::radians(-30.0f),glm::radians(5.0f));
+	}
+	else
+	{
+		this->CannonRotate = 0.0f;
+	}
+	
 }
 
 void Game::UpdateMouseInput()
@@ -361,11 +461,45 @@ void Game::Update()
 	this->updateDt();
 	this->UpdateInput();
 
-	//this->Models[0]->Rotate(glm::vec3(0.0f, 0.2f, 0.0f));
-	//this->Models[1]->Rotate(glm::vec3(0.2f, 0.0f, 0.0f));
-	this->Models[0]->Rotate(glm::vec3(0.0f, 0.1f, 0.0f));
-	this->Models[1]->Rotate(glm::vec3(0.1f, 0.0f, 0.0f));
-	this->Models[2]->Rotate(glm::vec3(0.0f, -0.1f, 0.0f));
+	this->x += TankSpeed * dt * -cos(Rotation+PI/2);
+	this->z += TankSpeed * dt * sin(Rotation + PI/2);
+	std::cout << Rotation << "\n";
+
+	glm::mat4 CannonMatrix = glm::mat4(1.0f);
+	CannonMatrix = glm::translate(CannonMatrix, glm::vec3(x, 0.0f, z));
+	CannonMatrix = glm::rotate(CannonMatrix, Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+	CannonMatrix = glm::translate(CannonMatrix, glm::vec3(0.0f, 0.636f, 0.0f));
+	CannonMatrix = glm::rotate(CannonMatrix, TurretRotation, glm::vec3(0.0f, 1.0f, 0.0f));
+	CannonMatrix = glm::translate(CannonMatrix, glm::vec3(0.0f, 0.0f, 0.422f));
+	CannonMatrix = glm::rotate(CannonMatrix, CannonRotation, glm::vec3(1.0f, 0.0f, 0.0f));
+	//this->Models[TANK_CANNON]->Rotate(glm::vec3(1.0f, 0.0f, 0.0f));
+	// glm::vec3(4.0f, -0.636f, -0.422f)
+	//Set TankPosition
+	this->Models[TANK_HULL]->SetPosition(glm::vec3(x, 0.0f, z));
+	this->Models[TANK_TURRET]->SetPosition(glm::vec3(x, 0.0f, z));
+	this->Models[TANK_TRACKS]->SetPosition(glm::vec3(x, 0.0f, z));
+	this->Models[TANK_CANNON]->SetMatrix(CannonMatrix);
+
+	//this->Models[TANK_CANNON]->SetPosition(glm::vec3(x +0.422f * -cos(Rotation + PI / 2), 0.636f, z + 0.422f * sin(Rotation + PI / 2)));
+	//Set TankRotation
+	this->Models[TANK_HULL]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
+	this->Models[TANK_TURRET]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
+	this->Models[TANK_TRACKS]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
+	//this->Models[TANK_CANNON]->Rotate(glm::vec3(0.0f, TankRotate + TurretRotate, 0.0f));
+	//Rotation of Turret
+	this->Models[TANK_TURRET]->Rotate(glm::vec3(0.0f, TurretRotate, 0.0f));
+	//this->Models[TANK_CANNON]->Rotate(glm::vec3(0.0f, TurretRotate, 0.0f));
+
+	//this->Models[TANK_HULL]->Move(glm::vec3(0.0f, 0.0f, TankSpeed * 1.0f * dt));
+	//this->Models[TANK_HULL]->SetPosition(glm::vec3(x, 0.0f, z));
+	//this->Models[TANK_HULL]->Move(glm::vec3(TankSpeed * dt * cos(Rotation), 0.0f, -TankSpeed * dt * sin(Rotation)));
+	//this->Models[TANK_HULL]->Rotate(glm::vec3(0.0f, TankRotate*Rotation, 0.0f));
+	//this->Models[TANK_HULL]->Move(glm::vec3(0.0f, 0.0f, TankSpeed * dt * 1.0f));
+	//this->Models[TANK_TURRET]->Move(glm::vec3(0.0f, 0.0f, TankSpeed * dt * 1.0f));
+	//this->Models[TANK_TURRET]->Rotate(glm::vec3(0.0f, 0.4f, 0.0f));
+	//this->Models[0]->Rotate(glm::vec3(0.0f, 0.1f, 0.0f));
+	//this->Models[1]->Rotate(glm::vec3(0.1f, 0.0f, 0.0f));
+	//this->Models[2]->Rotate(glm::vec3(0.0f, -0.1f, 0.0f));
 }
 
 void Game::Render()
@@ -405,49 +539,3 @@ void Game::FrameBufferResize(GLFWwindow* window, int fbW, int fbH)
 {
 	glViewport(0, 0, fbW, fbH);
 }
-
-
-/*void Game::updateInput(GLFWwindow* window)
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	}
-}
-//Wykrywanie przycisków
-void Game::updateInput(GLFWwindow* window, Mesh& mesh)
-{
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-	{
-		mesh.Move(glm::vec3(0.0f, 0.0f, -0.001f * glfwGetTime()));
-	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		mesh.Move(glm::vec3(0.0f, 0.0f, 0.001f * glfwGetTime()));
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		mesh.Move(glm::vec3(-0.001f * glfwGetTime(), 0.0f, 0.0f));
-	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		mesh.Move(glm::vec3(0.001f * glfwGetTime(), 0.0f, 0.0f));
-	}
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-	{
-		mesh.Rotate(glm::vec3(0.0f, -0.01f * glfwGetTime(), 0.001f));
-	}
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-	{
-		mesh.Rotate(glm::vec3(0.0f, 0.01f * glfwGetTime(), 0.001f));
-	}
-	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-	{
-		mesh.Scale(glm::vec3(0.01 * glfwGetTime()));
-	}
-	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-	{
-		mesh.Scale(glm::vec3(-0.01 * glfwGetTime()));
-	}
-}
-*/

@@ -25,4 +25,6 @@
 #include "Piramid.h"
 #include "Camera.h"
 #include "model.h"
+#include "OBJLoader.h"
+#include "constants.h"
 

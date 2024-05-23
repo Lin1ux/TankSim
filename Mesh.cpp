@@ -48,36 +48,39 @@ void Mesh::UpdateUniforms(shader* shader)
 void Mesh::UpdateModelMatrix()
 {
 	this->ModelMatrix = glm::mat4(1.0f);
-	this->ModelMatrix = glm::translate(this->ModelMatrix, this->origin);
+	//this->ModelMatrix = glm::translate(this->ModelMatrix, this->origin);
+	this->ModelMatrix = glm::translate(this->ModelMatrix, this->position);
 	this->ModelMatrix = glm::rotate(this->ModelMatrix, glm::radians(this->rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 	this->ModelMatrix = glm::rotate(this->ModelMatrix, glm::radians(this->rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 	this->ModelMatrix = glm::rotate(this->ModelMatrix, glm::radians(this->rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-	this->ModelMatrix = glm::translate(this->ModelMatrix, this->position - this->origin);
+	//this->ModelMatrix = glm::translate(this->ModelMatrix, this->position - this->origin);
 	this->ModelMatrix = glm::scale(this->ModelMatrix, this->scale);
 }
 
+
 Mesh::Mesh(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* indexArray, const unsigned& nrOfIndicies, glm::vec3 position, glm::vec3 origin, glm::vec3 rotation, glm::vec3 scale)
 {
+
 	this->position = position;
 	this->origin = origin;
 	this->rotation = rotation;
 	this->scale = scale;
 
+	this->CanUpdate = true;
+
 	this->nrOfVertices = nrOfVertices;
-	this->nrOfIndices = nrOfVertices;
+	this->nrOfIndices = nrOfIndicies;
 
 	this->vertexArray = new Vertex[this->nrOfVertices];
 	for (size_t i = 0; i < this->nrOfVertices; i++)
 	{
 		this->vertexArray[i] = vertexArray[i];
 	}
-
 	this->indexArray = new GLuint[this->nrOfIndices];
 	for (size_t i = 0; i < this->nrOfIndices; i++)
 	{
 		this->indexArray[i] = indexArray[i];
 	}
-
 	this->InitVAO();
 	this->UpdateModelMatrix();
 }
@@ -115,6 +118,8 @@ Mesh::Mesh(const Mesh& obj)
 	this->rotation = obj.rotation;
 	this->scale = obj.scale;
 
+	this->CanUpdate = true;
+
 	this->nrOfVertices = obj.nrOfVertices;
 	this->nrOfIndices = obj.nrOfIndices;
 
@@ -146,6 +151,12 @@ Mesh::~Mesh()
 
 	delete[] this->vertexArray;
 	delete[] this->indexArray;
+}
+
+void Mesh::SetModelMatrix(glm::mat4 newMatrix,bool canUpdate)
+{
+	this->ModelMatrix = newMatrix;
+	this->CanUpdate = canUpdate;
 }
 
 void Mesh::SetPosition(const glm::vec3 position)
@@ -183,6 +194,11 @@ void Mesh::Scale(const glm::vec3 scale)
 	this->scale += scale;
 }
 
+glm::mat4 Mesh::GetMatrix()
+{
+	return this->ModelMatrix;
+}
+
 void Mesh::update()
 {
 
@@ -191,7 +207,10 @@ void Mesh::update()
 void Mesh::render(shader* shader)
 {
 	//Update Uniforms
-	UpdateModelMatrix();
+	if (CanUpdate)
+	{
+		UpdateModelMatrix();
+	}
 	
 	this->UpdateUniforms(shader);
 	shader->use();

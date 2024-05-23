@@ -76,4 +76,6 @@ void main()
 	//vec4(vs_color,1.0f)
 	fs_color = texture(material.diffuseTex, vs_texcord)
 	* (vec4(ambientFinal,1.0f) + vec4(diffuseFinal,1.0f) + vec4(specularFinal,1.0f));
+
+	//fs_color = (vec4(ambientFinal,1.0f) + vec4(diffuseFinal,1.0f) + vec4(specularFinal,1.0f));
 }

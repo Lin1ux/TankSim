@@ -7,6 +7,7 @@ enum shader_enums {SHADER_CORE_PROGRAM = 0};
 enum texture_enums {TEXTURE_BRICKS0 = 0, TEXTURE_BRICKS_SPEC, TEXTURE_STONE1};
 enum material_enums {MATERIAL_1 = 0};
 enum mesh_enums {MESH_QUAD = 0};
+enum tank_parts {TANK_HULL = 0,TANK_TURRET,TANK_TRACKS,TANK_CANNON};
 
 class Game
 {
@@ -34,6 +35,18 @@ private:
 	double mouseOffsetX;
 	double mouseOffsetY;
 	bool firstMouse;
+
+	float TankSpeed;
+	float TankRotate;
+	float TurretRotate;
+	float CannonRotate;
+
+	float x;
+	float z;
+
+	float Rotation;
+	float TurretRotation;
+	float CannonRotation;
 
 	//Kamera
 	Camera camera;
@@ -68,6 +81,7 @@ private:
 	void InitShader();
 	void InitTextures();
 	void InitMaterials();
+	void InitOBJModels();
 	void InitModels();
 	void InitLights();
 	void InitUniforms();

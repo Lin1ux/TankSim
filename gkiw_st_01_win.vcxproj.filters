@@ -168,6 +168,8 @@
     </None>
     <None Include="Fragment_Shadder.glsl" />
     <None Include="Vertex_core.glsl" />
+    <None Include="F_Shader.glsl" />
+    <None Include="V_Shader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tank Simulator.rc">
