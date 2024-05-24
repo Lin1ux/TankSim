@@ -113,7 +113,7 @@ std::vector<Vertex> OBJModel::loadOBJ(const char* fileName)
 		//std::cout << vertices[i].position.x << " " << vertices[i].position.y << " " << vertices[i].position.z << "\n";
 	}
 
-	std::cout << "OBJ LOADED\n";
+	std::cout << "OBJ LOADED: "<< fileName<<"\n";
 	//£adowanie zakoñczone sukcesem
 	return vertices;
 }

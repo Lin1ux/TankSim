@@ -192,10 +192,30 @@
     <Image Include="Textures\TrackL.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
+    <Image Include="Textures\BackWheel.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\DoubleWheel.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\FrontWheel.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\SingleWheel.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\TrackR.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="Models\cube.obj" />
-    <Object Include="Models\LTrack.obj" />
     <Object Include="Models\Tank.obj" />
+    <Object Include="Models\BackWheel.obj" />
+    <Object Include="Models\cube.obj" />
+    <Object Include="Models\DoubleWheel.obj" />
+    <Object Include="Models\FrontWheel.obj" />
+    <Object Include="Models\LTrack.obj" />
+    <Object Include="Models\RTrack.obj" />
+    <Object Include="Models\SingleWheel.obj" />
   </ItemGroup>
 </Project>

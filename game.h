@@ -4,10 +4,15 @@
 
 //ENUMS
 enum shader_enums {SHADER_CORE_PROGRAM = 0};
-enum texture_enums {TEXTURE_BRICKS0 = 0, TEXTURE_BRICKS_SPEC, TEXTURE_STONE1};
+enum texture_enums {TEXTURE_BRICKS0 = 0, TEXTURE_BRICKS_SPEC,TEX_TRACKL, TEX_TRACKR,TEX_HULLTANK,
+	TEX_FRONT_WHEEL, TEX_SINGLE_WHEEL, TEX_DOUBLE_WHEEL, TEX_BACK_WHEEL,
+	TEX_DIRT};
 enum material_enums {MATERIAL_1 = 0};
 enum mesh_enums {MESH_QUAD = 0};
-enum tank_parts {TANK_HULL = 0,TANK_TURRET,TANK_TRACKS,TANK_CANNON};
+enum tank_parts {TANK_HULL = 0,TANK_TURRET,TANK_TRACKL, TANK_TRACKR,TANK_CANNON,
+	LFRONT_WHEEL,LWHEEL2,LWHEEL3, LWHEEL4, LWHEEL5, LWHEEL6, LWHEEL7, LWHEEL8, LWHEEL9,LBACK_WHEEL,
+	RFRONT_WHEEL,RWHEEL2, RWHEEL3, RWHEEL4, RWHEEL5, RWHEEL6, RWHEEL7, RWHEEL8, RWHEEL9, RBACK_WHEEL
+};
 
 class Game
 {
@@ -47,6 +52,10 @@ private:
 	float Rotation;
 	float TurretRotation;
 	float CannonRotation;
+	float LeftWheels;
+	float RightWheels;
+
+	std::vector<glm::vec3> WheelOffsets;
 
 	//Kamera
 	Camera camera;

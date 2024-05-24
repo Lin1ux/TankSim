@@ -91,9 +91,19 @@ void Game::InitTextures()
 	//Texture 1
 	this->Textures.push_back(new Texture ("Textures/TrackL.png", GL_TEXTURE_2D));
 
-	this->Textures.push_back(new Texture("Textures/Dirt.png", GL_TEXTURE_2D));
+	this->Textures.push_back(new Texture("Textures/TrackR.png", GL_TEXTURE_2D));
 
 	this->Textures.push_back(new Texture("Textures/HullTank.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/FrontWheel.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/SingleWheel.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/DoubleWheel.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/BackWheel.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/Dirt.png", GL_TEXTURE_2D));
 
 }
 
@@ -131,8 +141,8 @@ void Game::InitModels()
 	this->Models.push_back(new Model(
 		glm::vec3(3.0f, 0.0f, 0.0f),
 		this->Materials[MATERIAL_1],
-		this->Textures[4],
-		this->Textures[TEXTURE_BRICKS_SPEC],
+		this->Textures[TEX_HULLTANK],
+		this->Textures[0],
 		"Models/Tank.obj"
 	));
 
@@ -147,9 +157,17 @@ void Game::InitModels()
 	this->Models.push_back(new Model(
 		glm::vec3(3.0f, 0.0f, 0.0f),
 		this->Materials[MATERIAL_1],
-		this->Textures[TEXTURE_STONE1],
+		this->Textures[TEX_TRACKL],
 		this->Textures[TEXTURE_BRICKS_SPEC],
 		"Models/LTrack.obj"
+	));
+
+	this->Models.push_back(new Model(
+		glm::vec3(3.0f, 0.0f, 0.0f),
+		this->Materials[MATERIAL_1],
+		this->Textures[TEX_TRACKR],
+		this->Textures[TEXTURE_BRICKS_SPEC],
+		"Models/RTrack.obj"
 	));
 	
 	this->Models.push_back(new Model(
@@ -159,6 +177,73 @@ void Game::InitModels()
 		this->Textures[TEXTURE_BRICKS_SPEC],
 		"Cannon.obj"
 	));
+
+	//Lewe ko³a
+	this->Models.push_back(new Model(
+		glm::vec3(-0.41f, 0.0f, 1.374f),
+		this->Materials[MATERIAL_1],
+		this->Textures[TEX_FRONT_WHEEL],
+		this->Textures[TEXTURE_BRICKS_SPEC],
+		"Models/FrontWheel.obj"
+	));
+	for (int i = 0; i < 4; i++)
+	{
+		this->Models.push_back(new Model(
+			glm::vec3(0.5 * i, 0.0f, 1.374f),
+			this->Materials[MATERIAL_1],
+			this->Textures[TEX_SINGLE_WHEEL],
+			this->Textures[TEXTURE_BRICKS_SPEC],
+			"Models/SingleWheel.obj"
+		));
+		this->Models.push_back(new Model(
+			glm::vec3(-0.5f * i, 0.5f, 1.374f),
+			this->Materials[MATERIAL_1],
+			this->Textures[TEX_DOUBLE_WHEEL],
+			this->Textures[TEXTURE_BRICKS_SPEC],
+			"Models/DoubleWheel.obj"
+		));
+	}
+
+	this->Models.push_back(new Model(
+		glm::vec3(0.41f, 0.0f, 1.374f),
+		this->Materials[MATERIAL_1],
+		this->Textures[TEX_BACK_WHEEL],
+		this->Textures[TEXTURE_BRICKS_SPEC],
+		"Models/BackWheel.obj"
+	));
+	//Prawe ko³a
+	this->Models.push_back(new Model(
+		glm::vec3(-0.41f, 0.0f, 1.374f),
+		this->Materials[MATERIAL_1],
+		this->Textures[TEX_FRONT_WHEEL],
+		this->Textures[TEXTURE_BRICKS_SPEC],
+		"Models/FrontWheel.obj"
+	));
+	for (int i = 0; i < 4; i++)
+	{
+		this->Models.push_back(new Model(
+			glm::vec3(0.5 * i, 0.0f, 1.374f),
+			this->Materials[MATERIAL_1],
+			this->Textures[TEX_SINGLE_WHEEL],
+			this->Textures[TEXTURE_BRICKS_SPEC],
+			"Models/SingleWheel.obj"
+		));
+		this->Models.push_back(new Model(
+			glm::vec3(-0.5f * i, 0.5f, 1.374f),
+			this->Materials[MATERIAL_1],
+			this->Textures[TEX_DOUBLE_WHEEL],
+			this->Textures[TEXTURE_BRICKS_SPEC],
+			"Models/DoubleWheel.obj"
+		));
+	}
+
+	this->Models.push_back(new Model(
+		glm::vec3(0.41f, 0.0f, 1.374f),
+		this->Materials[MATERIAL_1],
+		this->Textures[TEX_BACK_WHEEL],
+		this->Textures[TEXTURE_BRICKS_SPEC],
+		"Models/BackWheel.obj"
+	));
 	//Dirt
 	for (int i = -10; i < 10; i++)
 	{
@@ -167,26 +252,14 @@ void Game::InitModels()
 			this->Models.push_back(new Model(
 				glm::vec3(i * 2.0f, -1.4f, j*2.0f),
 				this->Materials[MATERIAL_1],
-				this->Textures[3],
+				this->Textures[TEX_DIRT],
 				this->Textures[TEXTURE_BRICKS_SPEC],
 				"Models/cube.obj"
 			));
 		}
 	}
 
-	for (int i = 10; i < 10; i++)	//Dokoñczyæ zmieniæ (int i = 1)
-	{
-		std::string name = "WheelL" + std::to_string(i) + ".obj";
-		std::cout << name << "\n";
-		this->Models.push_back(new Model(
-			glm::vec3(3.0f, 0.0f, 0.0f),
-			this->Materials[MATERIAL_1],
-			this->Textures[TEXTURE_BRICKS0],
-			this->Textures[TEXTURE_BRICKS_SPEC],
-			name.c_str()
-		));
-	}
-
+	std::cout << "Load\n";
 
 	for (auto*& i : Meshes)
 		delete i;
@@ -283,9 +356,37 @@ Game::Game(const char* title,
 	this->CannonRotate = 0;
 	this->Rotation = 0;
 	this->TurretRotation = 0;
+	this->LeftWheels = 0;
+	this->RightWheels = 0;
+	//Offsety kó³
+	this->WheelOffsets = std::vector<glm::vec3>();
+
+	WheelOffsets.push_back(glm::vec3(0.58f, 0.0f, 1.374f));		//Przednie Lewe ko³o
+	WheelOffsets.push_back(glm::vec3(0.58f, -0.121f, 1.04f));	//Lewe Ko³o 2
+	WheelOffsets.push_back(glm::vec3(0.58f, -0.121f, 0.78f));	//Lewe Ko³o 3
+	WheelOffsets.push_back(glm::vec3(0.58f, -0.121f, 0.52f));	//Lewe Ko³o 4
+	WheelOffsets.push_back(glm::vec3(0.58f, -0.121f, 0.25f));	//Lewe Ko³o 5
+	WheelOffsets.push_back(glm::vec3(0.58f, -0.121f, 0.0f));	//Lewe Ko³o 6
+	WheelOffsets.push_back(glm::vec3(0.58f, -0.121f, -0.25f));	//Lewe Ko³o 7
+	WheelOffsets.push_back(glm::vec3(0.58f, -0.121f, -0.52f));	//Lewe Ko³o 8
+	WheelOffsets.push_back(glm::vec3(0.58f, -0.121f, -0.78f));	//Lewe Ko³o 9
+	WheelOffsets.push_back(glm::vec3(0.58f, -0.0f, -1.04f));	//Lewe Ko³o 9
+
+	WheelOffsets.push_back(glm::vec3(-0.52f, 0.0f, 1.374f));	//Przednie Prawe ko³o
+	WheelOffsets.push_back(glm::vec3(-0.52f, -0.121f, 1.04f));	//Prawe Ko³o 2
+	WheelOffsets.push_back(glm::vec3(-0.52f, -0.121f, 0.78f));	//Prawe Ko³o 3
+	WheelOffsets.push_back(glm::vec3(-0.52f, -0.121f, 0.52f));	//Prawe Ko³o 4
+	WheelOffsets.push_back(glm::vec3(-0.52f, -0.121f, 0.25f));	//Prawe Ko³o 5
+	WheelOffsets.push_back(glm::vec3(-0.52f, -0.121f, 0.0f));	//Prawe Ko³o 6
+	WheelOffsets.push_back(glm::vec3(-0.52f, -0.121f, -0.25f));	//Prawe Ko³o 7
+	WheelOffsets.push_back(glm::vec3(-0.52f, -0.121f, -0.52f));	//Prawe Ko³o 8
+	WheelOffsets.push_back(glm::vec3(-0.52f, -0.121f, -0.78f));	//Prawe Ko³o 9
+	WheelOffsets.push_back(glm::vec3(-0.52f, -0.0f, -1.04f));	//Prawe Ko³o 9
 
 	this->x = 0;
 	this->z = 0;
+
+
 
 
 	this->InitGLFW();
@@ -380,11 +481,15 @@ void Game::UpdateKeyboardInput()
 	}
 	if (glfwGetKey(this->window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		this->TankSpeed = 1.0f;
+		this->TankSpeed = 2.0f;
+		this->LeftWheels += 7.0f * dt;
+		this->RightWheels -= 7.0f * dt;
 	}
 	else if (glfwGetKey(this->window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
-		this->TankSpeed = -1.0f;
+		this->TankSpeed = -2.0f;
+		this->LeftWheels -= 7.0f * dt;
+		this->RightWheels += 7.0f * dt;
 	}
 	else
 	{
@@ -395,12 +500,16 @@ void Game::UpdateKeyboardInput()
 		this->TankRotate = 1.0f * dt /3.14*180;
 		//this->TurretRotate = TankRotate;
 		this->Rotation += 1.0f * dt;
+		this->LeftWheels -= 7.0f * dt;
+		this->RightWheels -= 7.0f * dt;
 	}
 	else if (glfwGetKey(this->window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
 		this->TankRotate = -1.0f * dt / 3.14 * 180;
 		//this->TurretRotate = TankRotate;
 		this->Rotation -= 1.0f * dt;
+		this->LeftWheels += 7.0f * dt;
+		this->RightWheels += 7.0f * dt;
 	}
 	else
 	{
@@ -490,14 +599,52 @@ void Game::Update()
 	CannonMatrix = glm::rotate(CannonMatrix, TurretRotation, glm::vec3(0.0f, 1.0f, 0.0f));
 	CannonMatrix = glm::translate(CannonMatrix, glm::vec3(0.0f, 0.0f, 0.422f));
 	CannonMatrix = glm::rotate(CannonMatrix, CannonRotation, glm::vec3(1.0f, 0.0f, 0.0f));
+	this->Models[TANK_CANNON]->SetMatrix(CannonMatrix);
 	//Set TankPosition
+	
+	glm::mat4 Wheel = glm::mat4(1.0f);
+	for (int i = 0; i < WheelOffsets.size(); i++)
+	{
+		Wheel = glm::mat4(1.0f);
+		Wheel = glm::translate(Wheel, glm::vec3(x, 0.0f, z));
+		Wheel = glm::rotate(Wheel, Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+		Wheel = glm::translate(Wheel, WheelOffsets[i]);
+		if (i < 10)
+		{
+			Wheel = glm::rotate(Wheel, LeftWheels, glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		else
+		{
+			Wheel = glm::rotate(Wheel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			Wheel = glm::rotate(Wheel, RightWheels, glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+		this->Models[LFRONT_WHEEL + i]->SetMatrix(Wheel);
+	}
+	//Przednie Lewe ko³o 
+	
+	/*LFrontWheel = glm::translate(LFrontWheel, glm::vec3(x, 0.0f, z));
+	LFrontWheel = glm::rotate(LFrontWheel, Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+	LFrontWheel = glm::translate(LFrontWheel, glm::vec3(0.58f, 0.0f, 1.374f));
+	LFrontWheel = glm::rotate(LFrontWheel, LeftWheels, glm::vec3(1.0f, 0.0f, 0.0f));
+	this->Models[LFRONT_WHEEL]->SetMatrix(LFrontWheel);*/
+	//Przednie Prawe ko³o 
+	/*glm::mat4 RFrontWheel = glm::mat4(1.0f);
+	RFrontWheel = glm::translate(RFrontWheel, glm::vec3(x, 0.0f, z));
+	RFrontWheel = glm::rotate(RFrontWheel, Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+	RFrontWheel = glm::translate(RFrontWheel, glm::vec3(-0.52f, 0.0f, 1.374f));
+	RFrontWheel = glm::rotate(RFrontWheel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	RFrontWheel = glm::rotate(RFrontWheel, RightWheels, glm::vec3(1.0f, 0.0f, 0.0f));
+	this->Models[RFRONT_WHEEL]->SetMatrix(RFrontWheel);*/
+
+
 	this->Models[TANK_HULL]->SetPosition(glm::vec3(x, 0.0f, z));
 	this->Models[TANK_TURRET]->SetPosition(glm::vec3(x, 0.0f, z));
-	this->Models[TANK_TRACKS]->SetPosition(glm::vec3(x, 0.0f, z));
-	this->Models[TANK_CANNON]->SetMatrix(CannonMatrix);
+	this->Models[TANK_TRACKL]->SetPosition(glm::vec3(x, 0.0f, z));
+	this->Models[TANK_TRACKR]->SetPosition(glm::vec3(x, 0.0f, z));
 	this->Models[TANK_HULL]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
 	this->Models[TANK_TURRET]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
-	this->Models[TANK_TRACKS]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
+	this->Models[TANK_TRACKL]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
+	this->Models[TANK_TRACKR]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
 	//Rotation of Turret
 	this->Models[TANK_TURRET]->Rotate(glm::vec3(0.0f, TurretRotate, 0.0f));
 }

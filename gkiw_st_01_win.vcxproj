@@ -81,15 +81,25 @@
     <ResourceCompile Include="Tank Simulator.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Textures\BackWheel.png" />
     <Image Include="Textures\bricks.png" />
     <Image Include="Textures\Dirt.png" />
+    <Image Include="Textures\DoubleWheel.png" />
+    <Image Include="Textures\FrontWheel.png" />
     <Image Include="Textures\HullTank.png" />
+    <Image Include="Textures\SingleWheel.png" />
     <Image Include="Textures\stone-wall.png" />
     <Image Include="Textures\TrackL.png" />
+    <Image Include="Textures\TrackR.png" />
   </ItemGroup>
   <ItemGroup>
+    <Object Include="Models\BackWheel.obj" />
     <Object Include="Models\cube.obj" />
+    <Object Include="Models\DoubleWheel.obj" />
+    <Object Include="Models\FrontWheel.obj" />
     <Object Include="Models\LTrack.obj" />
+    <Object Include="Models\RTrack.obj" />
+    <Object Include="Models\SingleWheel.obj" />
     <Object Include="Models\Tank.obj" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
