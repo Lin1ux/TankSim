@@ -61,17 +61,17 @@ std::vector<Vertex> OBJModel::loadOBJ(const char* fileName)
 				if (counter == 0)
 				{
 					vertexPositionIndicies.push_back(tempGLInt);
-					std::cout << "V: " << tempGLInt << " T: ";
+					//std::cout << "V: " << tempGLInt << " T: ";
 				}
 				else if (counter == 1)
 				{
 					vertexTexCordIndicies.push_back(tempGLInt);
-					std::cout << tempGLInt << " N: ";
+					//std::cout << tempGLInt << " N: ";
 				}
 				else if (counter == 2)
 				{
 					vertexNormalIndicies.push_back(tempGLInt);
-					std::cout << tempGLInt << "\n";
+					//std::cout << tempGLInt << "\n";
 				}
 				//Radzenie z znakami
 				if (ss.peek() == '/')

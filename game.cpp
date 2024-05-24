@@ -89,7 +89,11 @@ void Game::InitTextures()
 	this->Textures.push_back(new Texture("Textures/bricks_specular.png", GL_TEXTURE_2D));
 
 	//Texture 1
-	this->Textures.push_back(new Texture ("Textures/stone-wall.png", GL_TEXTURE_2D));
+	this->Textures.push_back(new Texture ("Textures/TrackL.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/Dirt.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/HullTank.png", GL_TEXTURE_2D));
 
 }
 
@@ -127,9 +131,9 @@ void Game::InitModels()
 	this->Models.push_back(new Model(
 		glm::vec3(3.0f, 0.0f, 0.0f),
 		this->Materials[MATERIAL_1],
-		this->Textures[TEXTURE_BRICKS0],
+		this->Textures[4],
 		this->Textures[TEXTURE_BRICKS_SPEC],
-		"TankHull2.obj"
+		"Models/Tank.obj"
 	));
 
 	this->Models.push_back(new Model(
@@ -143,9 +147,9 @@ void Game::InitModels()
 	this->Models.push_back(new Model(
 		glm::vec3(3.0f, 0.0f, 0.0f),
 		this->Materials[MATERIAL_1],
-		this->Textures[TEXTURE_BRICKS0],
+		this->Textures[TEXTURE_STONE1],
 		this->Textures[TEXTURE_BRICKS_SPEC],
-		"Tracks.obj"
+		"Models/LTrack.obj"
 	));
 	
 	this->Models.push_back(new Model(
@@ -155,6 +159,20 @@ void Game::InitModels()
 		this->Textures[TEXTURE_BRICKS_SPEC],
 		"Cannon.obj"
 	));
+	//Dirt
+	for (int i = -10; i < 10; i++)
+	{
+		for (int j = -10; j < 10; j++)
+		{
+			this->Models.push_back(new Model(
+				glm::vec3(i * 2.0f, -1.4f, j*2.0f),
+				this->Materials[MATERIAL_1],
+				this->Textures[3],
+				this->Textures[TEXTURE_BRICKS_SPEC],
+				"Models/cube.obj"
+			));
+		}
+	}
 
 	for (int i = 10; i < 10; i++)	//Dokoñczyæ zmieniæ (int i = 1)
 	{
@@ -463,8 +481,8 @@ void Game::Update()
 
 	this->x += TankSpeed * dt * -cos(Rotation+PI/2);
 	this->z += TankSpeed * dt * sin(Rotation + PI/2);
-	std::cout << Rotation << "\n";
 
+	//Dzia³o
 	glm::mat4 CannonMatrix = glm::mat4(1.0f);
 	CannonMatrix = glm::translate(CannonMatrix, glm::vec3(x, 0.0f, z));
 	CannonMatrix = glm::rotate(CannonMatrix, Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -472,34 +490,16 @@ void Game::Update()
 	CannonMatrix = glm::rotate(CannonMatrix, TurretRotation, glm::vec3(0.0f, 1.0f, 0.0f));
 	CannonMatrix = glm::translate(CannonMatrix, glm::vec3(0.0f, 0.0f, 0.422f));
 	CannonMatrix = glm::rotate(CannonMatrix, CannonRotation, glm::vec3(1.0f, 0.0f, 0.0f));
-	//this->Models[TANK_CANNON]->Rotate(glm::vec3(1.0f, 0.0f, 0.0f));
-	// glm::vec3(4.0f, -0.636f, -0.422f)
 	//Set TankPosition
 	this->Models[TANK_HULL]->SetPosition(glm::vec3(x, 0.0f, z));
 	this->Models[TANK_TURRET]->SetPosition(glm::vec3(x, 0.0f, z));
 	this->Models[TANK_TRACKS]->SetPosition(glm::vec3(x, 0.0f, z));
 	this->Models[TANK_CANNON]->SetMatrix(CannonMatrix);
-
-	//this->Models[TANK_CANNON]->SetPosition(glm::vec3(x +0.422f * -cos(Rotation + PI / 2), 0.636f, z + 0.422f * sin(Rotation + PI / 2)));
-	//Set TankRotation
 	this->Models[TANK_HULL]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
 	this->Models[TANK_TURRET]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
 	this->Models[TANK_TRACKS]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
-	//this->Models[TANK_CANNON]->Rotate(glm::vec3(0.0f, TankRotate + TurretRotate, 0.0f));
 	//Rotation of Turret
 	this->Models[TANK_TURRET]->Rotate(glm::vec3(0.0f, TurretRotate, 0.0f));
-	//this->Models[TANK_CANNON]->Rotate(glm::vec3(0.0f, TurretRotate, 0.0f));
-
-	//this->Models[TANK_HULL]->Move(glm::vec3(0.0f, 0.0f, TankSpeed * 1.0f * dt));
-	//this->Models[TANK_HULL]->SetPosition(glm::vec3(x, 0.0f, z));
-	//this->Models[TANK_HULL]->Move(glm::vec3(TankSpeed * dt * cos(Rotation), 0.0f, -TankSpeed * dt * sin(Rotation)));
-	//this->Models[TANK_HULL]->Rotate(glm::vec3(0.0f, TankRotate*Rotation, 0.0f));
-	//this->Models[TANK_HULL]->Move(glm::vec3(0.0f, 0.0f, TankSpeed * dt * 1.0f));
-	//this->Models[TANK_TURRET]->Move(glm::vec3(0.0f, 0.0f, TankSpeed * dt * 1.0f));
-	//this->Models[TANK_TURRET]->Rotate(glm::vec3(0.0f, 0.4f, 0.0f));
-	//this->Models[0]->Rotate(glm::vec3(0.0f, 0.1f, 0.0f));
-	//this->Models[1]->Rotate(glm::vec3(0.1f, 0.0f, 0.0f));
-	//this->Models[2]->Rotate(glm::vec3(0.0f, -0.1f, 0.0f));
 }
 
 void Game::Render()

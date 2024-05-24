@@ -82,7 +82,15 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\bricks.png" />
+    <Image Include="Textures\Dirt.png" />
+    <Image Include="Textures\HullTank.png" />
     <Image Include="Textures\stone-wall.png" />
+    <Image Include="Textures\TrackL.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Models\cube.obj" />
+    <Object Include="Models\LTrack.obj" />
+    <Object Include="Models\Tank.obj" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -183,5 +183,19 @@
     <Image Include="Textures\stone-wall.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
+    <Image Include="Textures\Dirt.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\HullTank.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\TrackL.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Models\cube.obj" />
+    <Object Include="Models\LTrack.obj" />
+    <Object Include="Models\Tank.obj" />
   </ItemGroup>
 </Project>
