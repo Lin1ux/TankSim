@@ -226,4 +226,22 @@
       <Filter>Pliki zasobów</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="Models\BackWheel.obj" />
+    <Object Include="Models\Bullet.obj" />
+    <Object Include="Models\Cannon2.obj" />
+    <Object Include="Models\cube.obj" />
+    <Object Include="Models\DoubleWheel.obj" />
+    <Object Include="Models\FrontWheel.obj" />
+    <Object Include="Models\LTrack.obj" />
+    <Object Include="Models\Particle.obj" />
+    <Object Include="Models\RTrack.obj" />
+    <Object Include="Models\SingleWheel.obj" />
+    <Object Include="Models\Tank.obj" />
+    <Object Include="Models\Tank2.obj" />
+    <Object Include="Models\Tank3.obj" />
+    <Object Include="Models\Tank4.obj" />
+    <Object Include="Models\Tank5.obj" />
+    <Object Include="Models\Turret.obj" />
+  </ItemGroup>
 </Project>
