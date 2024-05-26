@@ -207,15 +207,23 @@
     <Image Include="Textures\TrackR.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Models\Tank.obj" />
-    <Object Include="Models\BackWheel.obj" />
-    <Object Include="Models\cube.obj" />
-    <Object Include="Models\DoubleWheel.obj" />
-    <Object Include="Models\FrontWheel.obj" />
-    <Object Include="Models\LTrack.obj" />
-    <Object Include="Models\RTrack.obj" />
-    <Object Include="Models\SingleWheel.obj" />
+    <Image Include="Textures\Bullet.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\Turret.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\Particle.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\HullTank3.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\HullTank2.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="Textures\Cannon2.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
   </ItemGroup>
 </Project>

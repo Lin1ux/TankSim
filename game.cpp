@@ -93,7 +93,11 @@ void Game::InitTextures()
 
 	this->Textures.push_back(new Texture("Textures/TrackR.png", GL_TEXTURE_2D));
 
-	this->Textures.push_back(new Texture("Textures/HullTank.png", GL_TEXTURE_2D));
+	this->Textures.push_back(new Texture("Textures/HullTank3.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/Turret.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/Cannon2.png", GL_TEXTURE_2D));
 
 	this->Textures.push_back(new Texture("Textures/FrontWheel.png", GL_TEXTURE_2D));
 
@@ -102,8 +106,12 @@ void Game::InitTextures()
 	this->Textures.push_back(new Texture("Textures/DoubleWheel.png", GL_TEXTURE_2D));
 
 	this->Textures.push_back(new Texture("Textures/BackWheel.png", GL_TEXTURE_2D));
+	
+	this->Textures.push_back(new Texture("Textures/Bullet.png", GL_TEXTURE_2D));
 
 	this->Textures.push_back(new Texture("Textures/Dirt.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/Particle.png", GL_TEXTURE_2D));
 
 }
 
@@ -120,22 +128,23 @@ void Game::InitOBJModels()
 void Game::InitModels()
 {
 	std::vector<Mesh*> Meshes;
-	//Inicjalizacja meshy w modelu
-	/*Piramid newPiramid = Piramid();
-	Piramid newPiramid2 = Piramid();
 
-	Meshes.push_back(new Mesh(&newPiramid,
-		glm::vec3(0.0f),
+	std::vector<Vertex> DirtVertex = OBJModel::loadOBJ("Models/cube.obj");
+	std::vector<Mesh*> Dirt;
+	std::vector<Vertex> ParticleVertex = OBJModel::loadOBJ("Models/Particle.obj");
+	std::vector<Mesh*> Particle;
+
+	Dirt.push_back(new Mesh(DirtVertex.data(), DirtVertex.size(), NULL, 0, glm::vec3(1.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f),
 		glm::vec3(0.0f),
 		glm::vec3(1.0f)
 	));
-	Meshes.push_back(new Mesh(&newPiramid,
-		glm::vec3(1.0f,1.0f,0.0f),
-		glm::vec3(1.0f,0.5f,1.0f),
-		glm::vec3(1.0f),
+
+	Particle.push_back(new Mesh(ParticleVertex.data(), ParticleVertex.size(), NULL, 0, glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(0.0f),
 		glm::vec3(1.0f)
-	));*/
+	));
 	//Inicjalizacja modelu
 
 	this->Models.push_back(new Model(
@@ -143,15 +152,15 @@ void Game::InitModels()
 		this->Materials[MATERIAL_1],
 		this->Textures[TEX_HULLTANK],
 		this->Textures[0],
-		"Models/Tank.obj"
+		"Models/Tank3.obj"
 	));
 
 	this->Models.push_back(new Model(
 		glm::vec3(3.0f, 0.0f, 0.0f),
 		this->Materials[MATERIAL_1],
-		this->Textures[TEXTURE_BRICKS0],
+		this->Textures[TEX_TURRET],
 		this->Textures[TEXTURE_BRICKS_SPEC],
-		"Turret.obj"
+		"Models/Turret.obj"
 	));
 
 	this->Models.push_back(new Model(
@@ -173,9 +182,9 @@ void Game::InitModels()
 	this->Models.push_back(new Model(
 		glm::vec3(-1.0f, 0.636f, 0.422f),
 		this->Materials[MATERIAL_1],
-		this->Textures[TEXTURE_BRICKS0],
+		this->Textures[TEX_CANNON],
 		this->Textures[TEXTURE_BRICKS_SPEC],
-		"Cannon.obj"
+		"Models/Cannon2.obj"
 	));
 
 	//Lewe ko³a
@@ -244,19 +253,38 @@ void Game::InitModels()
 		this->Textures[TEXTURE_BRICKS_SPEC],
 		"Models/BackWheel.obj"
 	));
+
+	this->Models.push_back(new Model(
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		this->Materials[MATERIAL_1],
+		this->Textures[TEX_BULLET],
+		this->Textures[TEXTURE_BRICKS_SPEC],
+		"Models/Bullet.obj"
+	));
 	//Dirt
-	for (int i = -10; i < 10; i++)
+	for (int i = -15; i < 15; i++)
 	{
-		for (int j = -10; j < 10; j++)
+		for (int j = -15; j < 15; j++)
 		{
 			this->Models.push_back(new Model(
 				glm::vec3(i * 2.0f, -1.4f, j*2.0f),
 				this->Materials[MATERIAL_1],
 				this->Textures[TEX_DIRT],
 				this->Textures[TEXTURE_BRICKS_SPEC],
-				"Models/cube.obj"
+				Dirt
 			));
 		}
+	}
+	//Cz¹steczki
+	for (int i = 0; i < 1000; i++)
+	{
+		this->Particles.push_back(new Model(
+			glm::vec3(2.0f, 1.4f, 2.0f),
+			this->Materials[MATERIAL_1],
+			this->Textures[TEX_PARTICLE],
+			this->Textures[TEXTURE_BRICKS_SPEC],
+			Particle
+		));
 	}
 
 	std::cout << "Load\n";
@@ -283,6 +311,21 @@ void Game::InitUniforms()
 	//Pozycja œwiat³a
 	this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(*this->Lights[0], "lightPos0");
 	//this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(this->camPosition, "cameraPos");
+}
+
+void Game::SetParticles(glm::mat4 matrix)
+{
+	for (int i = 0; i < Particles.size(); i++)
+	{
+		this->ParticlesMatrices[i] = matrix;
+		this->ParticlesMatrices[i] = glm::scale(this->ParticlesMatrices[i], glm::vec3((float)Game::Random(10, 20) / 1000, (float)Game::Random(10, 20) / 1000, (float)Game::Random(10, 20) / 1000));
+		this->ParticlesMatrices[i] = glm::translate(this->ParticlesMatrices[i], ParticleOffset[i]);
+		this->ParticlesMatrices[i] = glm::rotate(ParticlesMatrices[i], glm::radians(ParticleRotationY[i]), glm::vec3(0.0f, 1.0f, 0.0f));
+		this->ParticlesMatrices[i] = glm::rotate(ParticlesMatrices[i], glm::radians(ParticleRotationX[i]), glm::vec3(1.0f, 0.0f, 0.0f));
+		this->ParticleRotation[i] = ParticleRotationX[i];
+		this->Particles[i]->SetMatrix(this->ParticlesMatrices[i]);
+	}
+	this->explode = true;
 }
 
 void Game::UpdateUniforms()
@@ -312,6 +355,41 @@ void Game::UpdateUniforms()
 
 	this->Shaders[SHADER_CORE_PROGRAM]->setMat4fv(this->ProjectionMatrix, "ProjectionMatrix");
 
+}
+
+void Game::UpdateParticles()
+{
+	Particle_speed.clear();
+	ParticleOffset.clear();
+	ParticleRotationY.clear();
+	ParticleRotationX.clear();
+	ParticleRotation.clear();
+	for (size_t i = 0; i < Particles.size(); i++)
+	{
+		this->Particle_speed.push_back(Game::Random(10, 30));
+		std::cout << Particle_speed[i] << " ";
+	}
+	for (size_t i = 0; i < Particles.size(); i++)
+	{
+		this->ParticleOffset.push_back(glm::vec3( (float) Game::Random(10, 30)/10, (float) Game::Random(10, 30) / 10, (float) Game::Random(10, 30) / 10));
+	}
+	for (size_t i = 0; i < Particles.size(); i++)
+	{
+		this->ParticleOffset.push_back(glm::vec3((float)Game::Random(10, 30) / 10, (float)Game::Random(10, 30) / 10, (float)Game::Random(10, 30) / 10));
+	}
+	for (size_t i = 0; i < Particles.size(); i++)
+	{
+		this->ParticleRotationY.push_back(Game::Random(0, 360));
+	}
+	for (size_t i = 0; i < Particles.size(); i++)
+	{
+		this->ParticleRotationX.push_back(Game::Random(0, 75));
+	}
+	for (size_t i = 0; i < Particles.size(); i++)
+	{
+		this->ParticleRotation.push_back(0.0f);
+	}
+	std::cout<<"\n";
 }
 
 Game::Game(const char* title,
@@ -383,11 +461,16 @@ Game::Game(const char* title,
 	WheelOffsets.push_back(glm::vec3(-0.52f, -0.121f, -0.78f));	//Prawe Ko³o 9
 	WheelOffsets.push_back(glm::vec3(-0.52f, -0.0f, -1.04f));	//Prawe Ko³o 9
 
+	//Macierze
+	this->BulletMatrix = glm::mat4(1.0f);
+	this->CannonMatrix = glm::mat4(1.0f);
+
+	this->fire = false;
+	this->explode = false;
+	this->CannonCooldown = 0.0f;
+
 	this->x = 0;
 	this->z = 0;
-
-
-
 
 	this->InitGLFW();
 	this->InitWindow(title,resizable);
@@ -401,6 +484,13 @@ Game::Game(const char* title,
 	this->InitModels();
 	this->InitLights();
 	this->InitUniforms();
+
+	//Cz¹steczki
+	this->UpdateParticles();
+	for (size_t i = 0; i < this->Particles.size() ;i++)
+	{
+		this->ParticlesMatrices.push_back(glm::mat4(1.0f));
+	}
 }
 
 Game::~Game()
@@ -446,6 +536,11 @@ void Game::updateDt()
 	this->curTime = static_cast<float>(glfwGetTime());
 	this->dt = this->curTime - this->lastTime;
 	this->lastTime = this->curTime;
+	if (CannonCooldown < 10)
+	{
+		CannonCooldown += dt;
+	}
+	
 }
 
 void Game::UpdateKeyboardInput()
@@ -482,14 +577,14 @@ void Game::UpdateKeyboardInput()
 	if (glfwGetKey(this->window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
 		this->TankSpeed = 2.0f;
-		this->LeftWheels += 7.0f * dt;
-		this->RightWheels -= 7.0f * dt;
+		this->LeftWheels += TANK_MAX_SPEED * dt;
+		this->RightWheels -= TANK_MAX_SPEED * dt;
 	}
 	else if (glfwGetKey(this->window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
 		this->TankSpeed = -2.0f;
-		this->LeftWheels -= 7.0f * dt;
-		this->RightWheels += 7.0f * dt;
+		this->LeftWheels -= TANK_MAX_SPEED * dt;
+		this->RightWheels += TANK_MAX_SPEED * dt;
 	}
 	else
 	{
@@ -500,16 +595,16 @@ void Game::UpdateKeyboardInput()
 		this->TankRotate = 1.0f * dt /3.14*180;
 		//this->TurretRotate = TankRotate;
 		this->Rotation += 1.0f * dt;
-		this->LeftWheels -= 7.0f * dt;
-		this->RightWheels -= 7.0f * dt;
+		this->LeftWheels -= TANK_MAX_SPEED * dt;
+		this->RightWheels -= TANK_MAX_SPEED * dt;
 	}
 	else if (glfwGetKey(this->window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
 		this->TankRotate = -1.0f * dt / 3.14 * 180;
 		//this->TurretRotate = TankRotate;
 		this->Rotation -= 1.0f * dt;
-		this->LeftWheels += 7.0f * dt;
-		this->RightWheels += 7.0f * dt;
+		this->LeftWheels += TANK_MAX_SPEED * dt;
+		this->RightWheels += TANK_MAX_SPEED * dt;
 	}
 	else
 	{
@@ -545,7 +640,23 @@ void Game::UpdateKeyboardInput()
 	{
 		this->CannonRotate = 0.0f;
 	}
-	
+	if (glfwGetKey(this->window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		if (CannonCooldown > CANNON_RELOAD)
+		{
+			this->CannonCooldown = 0;
+			this->BulletMatrix = this->CannonMatrix;
+			this->BulletMatrix = glm::rotate(this->BulletMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			this->BulletMatrix = glm::scale(this->BulletMatrix, glm::vec3(0.25f, 0.25f, 0.25f));
+			this->BulletMatrix = glm::translate(this->BulletMatrix, glm::vec3(-8.0f, 0.0f, 0.0f));
+			this->Models[BULLET]->SetMatrix(this->BulletMatrix);
+			this->fire = true;
+		}
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_ENTER) == GLFW_PRESS)
+	{
+		SetParticles(glm::mat4(1.0f));
+	}
 }
 
 void Game::UpdateMouseInput()
@@ -592,16 +703,37 @@ void Game::Update()
 	this->z += TankSpeed * dt * sin(Rotation + PI/2);
 
 	//Dzia³o
-	glm::mat4 CannonMatrix = glm::mat4(1.0f);
-	CannonMatrix = glm::translate(CannonMatrix, glm::vec3(x, 0.0f, z));
-	CannonMatrix = glm::rotate(CannonMatrix, Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
-	CannonMatrix = glm::translate(CannonMatrix, glm::vec3(0.0f, 0.636f, 0.0f));
-	CannonMatrix = glm::rotate(CannonMatrix, TurretRotation, glm::vec3(0.0f, 1.0f, 0.0f));
-	CannonMatrix = glm::translate(CannonMatrix, glm::vec3(0.0f, 0.0f, 0.422f));
-	CannonMatrix = glm::rotate(CannonMatrix, CannonRotation, glm::vec3(1.0f, 0.0f, 0.0f));
-	this->Models[TANK_CANNON]->SetMatrix(CannonMatrix);
+	this->CannonMatrix = glm::mat4(1.0f);
+	this->CannonMatrix = glm::translate(this->CannonMatrix, glm::vec3(x, 0.0f, z));
+	this->CannonMatrix = glm::rotate(this->CannonMatrix, Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+	this->CannonMatrix = glm::translate(this->CannonMatrix, glm::vec3(0.0f, 0.636f, 0.0f));
+	this->CannonMatrix = glm::rotate(this->CannonMatrix, TurretRotation, glm::vec3(0.0f, 1.0f, 0.0f));
+	this->CannonMatrix = glm::translate(this->CannonMatrix, glm::vec3(0.0f, 0.0f, 0.422f));
+	this->CannonMatrix = glm::rotate(this->CannonMatrix, CannonRotation, glm::vec3(1.0f, 0.0f, 0.0f));
+	this->Models[TANK_CANNON]->SetMatrix(this->CannonMatrix);
+	//Pocisk
+	if (fire)
+	{
+		this->BulletMatrix = glm::rotate(this->BulletMatrix, glm::radians(10.0f * dt), glm::vec3(0.0f, 0.0f, 1.0f));
+		this->BulletMatrix = glm::translate(this->BulletMatrix, glm::vec3(-BULLET_SPEED * dt, 0.0f, 0.0f));
+		if (BulletMatrix[3].y < -0.5)
+		{
+			fire = false;
+			glm::mat4 ScaledBulletMatrix = BulletMatrix;
+			ScaledBulletMatrix = glm::scale(ScaledBulletMatrix, glm::vec3(4.0f,4.0f,4.0f));
+			SetParticles(ScaledBulletMatrix);
+		}
+	}
+	else
+	{
+		this->BulletMatrix=this->CannonMatrix;
+		this->BulletMatrix = glm::rotate(this->BulletMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		this->BulletMatrix = glm::scale(this->BulletMatrix, glm::vec3(0.25f, 0.25f, 0.25f));
+	}
+	this->Models[BULLET]->SetMatrix(this->BulletMatrix);
 	//Set TankPosition
 	
+	//Ko³a
 	glm::mat4 Wheel = glm::mat4(1.0f);
 	for (int i = 0; i < WheelOffsets.size(); i++)
 	{
@@ -620,23 +752,8 @@ void Game::Update()
 		}
 		this->Models[LFRONT_WHEEL + i]->SetMatrix(Wheel);
 	}
-	//Przednie Lewe ko³o 
-	
-	/*LFrontWheel = glm::translate(LFrontWheel, glm::vec3(x, 0.0f, z));
-	LFrontWheel = glm::rotate(LFrontWheel, Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
-	LFrontWheel = glm::translate(LFrontWheel, glm::vec3(0.58f, 0.0f, 1.374f));
-	LFrontWheel = glm::rotate(LFrontWheel, LeftWheels, glm::vec3(1.0f, 0.0f, 0.0f));
-	this->Models[LFRONT_WHEEL]->SetMatrix(LFrontWheel);*/
-	//Przednie Prawe ko³o 
-	/*glm::mat4 RFrontWheel = glm::mat4(1.0f);
-	RFrontWheel = glm::translate(RFrontWheel, glm::vec3(x, 0.0f, z));
-	RFrontWheel = glm::rotate(RFrontWheel, Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
-	RFrontWheel = glm::translate(RFrontWheel, glm::vec3(-0.52f, 0.0f, 1.374f));
-	RFrontWheel = glm::rotate(RFrontWheel, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	RFrontWheel = glm::rotate(RFrontWheel, RightWheels, glm::vec3(1.0f, 0.0f, 0.0f));
-	this->Models[RFRONT_WHEEL]->SetMatrix(RFrontWheel);*/
 
-
+	//Inne Czêœci
 	this->Models[TANK_HULL]->SetPosition(glm::vec3(x, 0.0f, z));
 	this->Models[TANK_TURRET]->SetPosition(glm::vec3(x, 0.0f, z));
 	this->Models[TANK_TRACKL]->SetPosition(glm::vec3(x, 0.0f, z));
@@ -647,6 +764,23 @@ void Game::Update()
 	this->Models[TANK_TRACKR]->Rotate(glm::vec3(0.0f, TankRotate, 0.0f));
 	//Rotation of Turret
 	this->Models[TANK_TURRET]->Rotate(glm::vec3(0.0f, TurretRotate, 0.0f));
+
+	//Cz¹steczki
+	for (size_t i = 0; i < Particles.size(); i++)
+	{
+		this->ParticlesMatrices[i] = glm::translate(ParticlesMatrices[i], glm::vec3(0.0f, PARTICLE_SPEED *dt,0.0f));
+		if (this->ParticleRotation[i] < 140)
+		{
+			this->ParticlesMatrices[i] = glm::rotate(ParticlesMatrices[i],glm::radians(PARTICLE_ROTATION_SPEED * dt), glm::vec3(1.0f, 0.0f, 0.0f));
+			this->ParticleRotation[i] += PARTICLE_ROTATION_SPEED * dt;
+			this->ParticleRotation[i] = glm::clamp(ParticleRotation[i], glm::radians(0.0f), glm::radians(140.0f));
+		}
+		if (ParticlesMatrices[i][3].y < -0.5f)
+		{
+			this->ParticlesMatrices[i] = glm::scale(ParticlesMatrices[i], glm::vec3(0.0f, 0.0f, 0.0f));
+		}
+		this->Particles[i]->SetMatrix(ParticlesMatrices[i]);
+	}
 }
 
 void Game::Render()
@@ -658,7 +792,7 @@ void Game::Render()
 	//updateInput(window, *this->Meshes[MESH_QUAD]);
 
 	//Czyszczenie ekranu i buforów
-	glClearColor(0.1f, 0.1f, 0.3f, 1.0f);
+	glClearColor(0.3f, 0.3f, 0.8f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	//Aktualizowanie uniformów (wysy³anie do karty graficznej
@@ -666,6 +800,10 @@ void Game::Render()
 
 	//Renderowanie modeli
 	for (auto& i : this->Models)
+	{
+		i->Render(this->Shaders[SHADER_CORE_PROGRAM]);
+	}
+	for (auto& i : this->Particles)
 	{
 		i->Render(this->Shaders[SHADER_CORE_PROGRAM]);
 	}
@@ -685,4 +823,10 @@ void Game::Render()
 void Game::FrameBufferResize(GLFWwindow* window, int fbW, int fbH)
 {
 	glViewport(0, 0, fbW, fbH);
+}
+
+int Game::Random(int min, int max)
+{
+	max += 1;
+	return rand() % (max - min) + min;
 }

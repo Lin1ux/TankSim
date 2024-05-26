@@ -326,6 +326,7 @@ GLFWwindow* createWindow(
 //Główny program
 int main()
 {
+	srand(time(NULL));          //Ziarno losowania
 	Game Game("Tank Simulator", WindowWidth, WindowHeight,3,3,false);
 
 	//Pętla Gry
