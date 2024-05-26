@@ -84,6 +84,24 @@ void Model::SetMatrix(glm::mat4 Matrix)
 	}
 }
 
+void Model::SetColor(glm::vec3 color)
+{
+	for (auto& i : this->meshes)
+	{
+		i->SetColor(color);
+	}
+}
+
+glm::mat4 Model::GetMatrix(int index)
+{
+	return meshes[index]->GetMatrix();
+}
+
+glm::vec3 Model::GetPosition(int index)
+{
+	return meshes[index]->GetMatrix()[3];
+}
+
 void Model::Update()
 {
 }

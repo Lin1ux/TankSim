@@ -194,6 +194,14 @@ void Mesh::Scale(const glm::vec3 scale)
 	this->scale += scale;
 }
 
+void Mesh::SetColor(glm::vec3 color)
+{
+	for (size_t i = 0; i < nrOfVertices; i++)
+	{
+		vertexArray[i].color = color;
+	}
+}
+
 glm::mat4 Mesh::GetMatrix()
 {
 	return this->ModelMatrix;

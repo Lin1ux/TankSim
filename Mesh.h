@@ -86,6 +86,7 @@ public:
 	void Move(const glm::vec3 position);
 	void Rotate(const glm::vec3 rotation);
 	void Scale(const glm::vec3 scale);
+	void SetColor(glm::vec3 color);
 
 	glm::mat4 GetMatrix();
 

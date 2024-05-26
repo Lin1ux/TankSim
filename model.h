@@ -33,6 +33,10 @@ public:
 	void Move(const glm::vec3 direction);
 	void SetPosition(const glm::vec3 position);
 	void SetMatrix(glm::mat4 Matrix);
+	void SetColor(glm::vec3 color);
+
+	glm::mat4 GetMatrix(int index);
+	glm::vec3 GetPosition(int index);
 
 	void Update();
 	void Render(shader* shader);
