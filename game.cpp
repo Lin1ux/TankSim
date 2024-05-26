@@ -419,6 +419,7 @@ Game::Game(const char* title,
 	this->dt = 0.0f;
 	this->curTime = 0.0f;
 	this->lastTime = 0.0f;
+	this->gameSpeed = 1.0f;
 
 	this->lastMouseX = 0.0f;
 	this->lastMouseY = 0.0f;
@@ -535,6 +536,7 @@ void Game::updateDt()
 {
 	this->curTime = static_cast<float>(glfwGetTime());
 	this->dt = this->curTime - this->lastTime;
+	this->dt*= gameSpeed;
 	this->lastTime = this->curTime;
 	if (CannonCooldown < 10)
 	{
@@ -545,6 +547,7 @@ void Game::updateDt()
 
 void Game::UpdateKeyboardInput()
 {
+	//Wy³¹czenie programu
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -552,56 +555,51 @@ void Game::UpdateKeyboardInput()
 	//Kamera
 	if (glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		this->camera.Move(this->dt, FORWARD);
+		this->camera.Move(this->dt/gameSpeed, FORWARD);
 	}
 	if (glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		this->camera.Move(this->dt, BACKWARD);
+		this->camera.Move(this->dt / gameSpeed, BACKWARD);
 	}
 	if (glfwGetKey(this->window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		this->camera.Move(this->dt, LEFT);
+		this->camera.Move(this->dt / gameSpeed, LEFT);
 	}
 	if (glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		this->camera.Move(this->dt, RIGHT);
+		this->camera.Move(this->dt / gameSpeed, RIGHT);
 	}
-	if (glfwGetKey(this->window, GLFW_KEY_C) == GLFW_PRESS)
-	{
-		this->camPosition.y -= 0.05f;
-	}
-	if (glfwGetKey(this->window, GLFW_KEY_SPACE) == GLFW_PRESS)
-	{
-		this->camPosition.y += 0.05f;
-	}
+	//Jazda do przodu
 	if (glfwGetKey(this->window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
 		this->TankSpeed = 2.0f;
 		this->LeftWheels += TANK_MAX_SPEED * dt;
 		this->RightWheels -= TANK_MAX_SPEED * dt;
 	}
+	//Jazda do ty³u
 	else if (glfwGetKey(this->window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
 		this->TankSpeed = -2.0f;
 		this->LeftWheels -= TANK_MAX_SPEED * dt;
 		this->RightWheels += TANK_MAX_SPEED * dt;
 	}
+	//Zatrzymanie
 	else
 	{
 		this->TankSpeed = 0.0f;
 	}
+	//Obrót w lewo
 	if (glfwGetKey(this->window, GLFW_KEY_LEFT) == GLFW_PRESS)
 	{
 		this->TankRotate = 1.0f * dt /3.14*180;
-		//this->TurretRotate = TankRotate;
 		this->Rotation += 1.0f * dt;
 		this->LeftWheels -= TANK_MAX_SPEED * dt;
 		this->RightWheels -= TANK_MAX_SPEED * dt;
 	}
+	//Obrót w prawo
 	else if (glfwGetKey(this->window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
 		this->TankRotate = -1.0f * dt / 3.14 * 180;
-		//this->TurretRotate = TankRotate;
 		this->Rotation -= 1.0f * dt;
 		this->LeftWheels += TANK_MAX_SPEED * dt;
 		this->RightWheels += TANK_MAX_SPEED * dt;
@@ -610,11 +608,13 @@ void Game::UpdateKeyboardInput()
 	{
 		this->TankRotate = 0.0f;
 	}
+	//Obrót wie¿y w lewo
 	if (glfwGetKey(this->window, GLFW_KEY_KP_4) == GLFW_PRESS)
 	{
 		this->TurretRotate = 1.0f * dt / 3.14 * 180;
 		TurretRotation += 1.0f * dt;
 	}
+	//Obrót wie¿y w prawo
 	else if (glfwGetKey(this->window, GLFW_KEY_KP_6) == GLFW_PRESS)
 	{
 		this->TurretRotate = -1.0f * dt / 3.14 * 180;
@@ -624,12 +624,14 @@ void Game::UpdateKeyboardInput()
 	{
 		this->TurretRotate = 0.0f;
 	}
+	//Opuszczenie lufy
 	if (glfwGetKey(this->window, GLFW_KEY_KP_5) == GLFW_PRESS)
 	{
 		this->CannonRotate = 1.0f * dt / 3.14 * 180;
 		this->CannonRotation += 1.0f * dt;
 		this->CannonRotation = glm::clamp(CannonRotation, glm::radians(-30.0f), glm::radians(5.0f));
 	}
+	//Podnoszenie lufy
 	else if (glfwGetKey(this->window, GLFW_KEY_KP_8) == GLFW_PRESS)
 	{
 		this->CannonRotate = -1.0f * dt / 3.14 * 180;
@@ -640,9 +642,10 @@ void Game::UpdateKeyboardInput()
 	{
 		this->CannonRotate = 0.0f;
 	}
+	//Strza³ 
 	if (glfwGetKey(this->window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		if (CannonCooldown > CANNON_RELOAD)
+		if (CannonCooldown > CANNON_RELOAD)	//Dzia³o wymaga czasu do prze³adowania
 		{
 			this->CannonCooldown = 0;
 			this->BulletMatrix = this->CannonMatrix;
@@ -653,10 +656,30 @@ void Game::UpdateKeyboardInput()
 			this->fire = true;
 		}
 	}
+	//Do testowania cz¹steczek (tworzy cz¹steczki na œrodku mapy)
 	if (glfwGetKey(this->window, GLFW_KEY_ENTER) == GLFW_PRESS)
 	{
 		SetParticles(glm::mat4(1.0f));
 	}
+	//Prêdkoœæ Gry
+	if (glfwGetKey(this->window, GLFW_KEY_1) == GLFW_PRESS)
+	{
+		this->gameSpeed = 1.0f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_2) == GLFW_PRESS)
+	{
+		this->gameSpeed = 2.0f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_3) == GLFW_PRESS)
+	{
+		this->gameSpeed = 0.25f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_4) == GLFW_PRESS)
+	{
+		this->gameSpeed = 0.1f;
+	}
+
+	
 }
 
 void Game::UpdateMouseInput()
@@ -689,7 +712,7 @@ void Game::UpdateInput()
 	glfwPollEvents();
 	this->UpdateKeyboardInput();
 	this->UpdateMouseInput();
-	this->camera.UpdateInput(dt, -1, this->mouseOffsetX, this->mouseOffsetY);
+	this->camera.UpdateInput(dt/gameSpeed, -1, this->mouseOffsetX, this->mouseOffsetY);
 	
 }
 
