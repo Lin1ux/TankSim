@@ -5,14 +5,14 @@
 //ENUMS
 enum shader_enums {SHADER_CORE_PROGRAM = 0};
 enum texture_enums {TEXTURE_BRICKS0 = 0, TEXTURE_BRICKS_SPEC,TEX_TRACKL, TEX_TRACKR,TEX_HULLTANK,TEX_TURRET,TEX_CANNON,
-	TEX_FRONT_WHEEL, TEX_SINGLE_WHEEL, TEX_DOUBLE_WHEEL, TEX_BACK_WHEEL,TEX_BULLET,
-	TEX_DIRT,TEX_PARTICLE};
+	TEX_FRONT_WHEEL, TEX_SINGLE_WHEEL, TEX_DOUBLE_WHEEL, TEX_BACK_WHEEL,TEX_BULLET,TEX_SMALL_BULLET,
+	TEX_DIRT,TEX_PARTICLE,TEX_HOLE};
 enum material_enums {MATERIAL_1 = 0};
-enum mesh_enums {MESH_QUAD = 0};
+enum mesh_enums {MESH_DIRT = 0,MESH_PARTICLES,MESH_BULLETS,MESH_HOLE};
 enum tank_parts {TANK_HULL = 0,TANK_TURRET,TANK_TRACKL, TANK_TRACKR,TANK_CANNON,
 	LFRONT_WHEEL,LWHEEL2,LWHEEL3, LWHEEL4, LWHEEL5, LWHEEL6, LWHEEL7, LWHEEL8, LWHEEL9,LBACK_WHEEL,
 	RFRONT_WHEEL,RWHEEL2, RWHEEL3, RWHEEL4, RWHEEL5, RWHEEL6, RWHEEL7, RWHEEL8, RWHEEL9, RBACK_WHEEL,
-	BULLET
+	BULLET,SMALL_BULLET
 };
 
 
@@ -59,6 +59,7 @@ private:
 	bool explode;								//Wybuch - s³u¿y do ustawiania pozycji startowej wybuchu
 
 	float CannonCooldown;						//£adowanie dzia³a
+	float MGCooldown;						//Czas pomiêdzy pociskami z karabinu
 
 	//Pozycja czo³gu
 	float x;									//Pozycja X czo³gu
@@ -94,9 +95,17 @@ private:
 	//Materia³y
 	std::vector<Material*> Materials;
 	//Modele
+	std::vector<std::vector<Mesh*>> Meshes;				//Meshe
 	std::vector<Model*> Models;
-	//Cz¹steczki
 	std::vector<Model*> Particles;				//Modele cz¹steczek
+	std::vector<Model*> MGBullets;				//Modele Pocisków
+	std::vector<Model*> Holes;					//Modele Dziur
+	
+	int numBullet;								//Indeks najnowszego pocisku
+	std::vector<glm::mat4> BulletMatrices;		//Macierze pocisków
+	std::vector<bool> BulletsFire;
+
+	//Cz¹steczki
 	std::vector<glm::mat4> ParticlesMatrices;	//Macierze cz¹steczek
 	std::vector<int> Particle_speed;			//Prêdkoœæ cz¹steczek
 	std::vector<glm::vec3> ParticleOffset;		//Offset cz¹steczek
@@ -143,7 +152,7 @@ public:
 	
 	void setWindowShouldClose();	//Zamyka program
 
-	void updateDt();				//Aktualizuje rzeczy zwi¹zane z delta time
+	void updateDt();				//Aktualizuje rzeczy zwi¹zane z delta time 
 	void UpdateKeyboardInput();		//Uruchamia rzeczy zwi¹zane z klawiszami klawiatury
 	void UpdateMouseInput();		//Aktualizuje ruch wzglêdem myszki
 	void UpdateInput();				//Aktualizacja urz¹dzeñ wejœciowych

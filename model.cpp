@@ -76,6 +76,14 @@ void Model::SetPosition(const glm::vec3 position)
 	}
 }
 
+void Model::Scale(const glm::vec3 scale)
+{
+	for (auto& i : this->meshes)
+	{
+		i->SetScale(scale);
+	}
+}
+
 void Model::SetMatrix(glm::mat4 Matrix)
 {
 	for (auto& i : this->meshes)
@@ -89,6 +97,14 @@ void Model::SetColor(glm::vec3 color)
 	for (auto& i : this->meshes)
 	{
 		i->SetColor(color);
+	}
+}
+
+void Model::RenderColor(bool OnlyColor)
+{
+	for (auto& i : this->meshes)
+	{
+		i->RenderColor(OnlyColor);
 	}
 }
 
@@ -108,10 +124,10 @@ void Model::Update()
 
 void Model::Render(shader* shader)
 {
-	this->UpdateUniforms();
+	//this->UpdateUniforms();
 
 	//Aktualizowanie uniformów (wysyłanie do karty graficznej
-	this->UpdateUniforms();
+	//this->UpdateUniforms();
 
 	this->material->sendToShader(*shader);
 

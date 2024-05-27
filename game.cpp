@@ -109,9 +109,13 @@ void Game::InitTextures()
 	
 	this->Textures.push_back(new Texture("Textures/Bullet.png", GL_TEXTURE_2D));
 
+	this->Textures.push_back(new Texture("Textures/SmallBullet.png", GL_TEXTURE_2D));
+
 	this->Textures.push_back(new Texture("Textures/Dirt.png", GL_TEXTURE_2D));
 
 	this->Textures.push_back(new Texture("Textures/Particle.png", GL_TEXTURE_2D));
+
+	this->Textures.push_back(new Texture("Textures/Hole.png", GL_TEXTURE_2D));
 
 }
 
@@ -127,24 +131,57 @@ void Game::InitOBJModels()
 
 void Game::InitModels()
 {
-	std::vector<Mesh*> Meshes;
+	
+	std::vector<Vertex> LoadedVertexes;
+	std::vector<Mesh*> LoadedMeshes;
 
-	std::vector<Vertex> DirtVertex = OBJModel::loadOBJ("Models/cube.obj");
+	/*std::vector<Vertex> DirtVertex = OBJModel::loadOBJ("Models/cube.obj");
 	std::vector<Mesh*> Dirt;
 	std::vector<Vertex> ParticleVertex = OBJModel::loadOBJ("Models/Particle.obj");
 	std::vector<Mesh*> Particle;
-
-	Dirt.push_back(new Mesh(DirtVertex.data(), DirtVertex.size(), NULL, 0, glm::vec3(1.0f, 0.0f, 0.0f),
+	std::vector<Vertex> BulletVertex = OBJModel::loadOBJ("Models/SmallBullet.obj");
+	std::vector<Mesh*> SBullets;*/
+	
+	LoadedVertexes = OBJModel::loadOBJ("Models/cube.obj");
+	
+	LoadedMeshes.push_back(new Mesh(LoadedVertexes.data(), LoadedVertexes.size(), NULL, 0, glm::vec3(1.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f),
 		glm::vec3(0.0f),
 		glm::vec3(1.0f)
 	));
+	this->Meshes.push_back(LoadedMeshes);
+	LoadedMeshes.clear();
+	LoadedVertexes.clear();
+	LoadedVertexes = OBJModel::loadOBJ("Models/Particle.obj");
 
-	Particle.push_back(new Mesh(ParticleVertex.data(), ParticleVertex.size(), NULL, 0, glm::vec3(1.0f, 0.0f, 0.0f),
+	LoadedMeshes.push_back(new Mesh(LoadedVertexes.data(), LoadedVertexes.size(), NULL, 0, glm::vec3(1.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f),
 		glm::vec3(0.0f),
 		glm::vec3(1.0f)
 	));
+	this->Meshes.push_back(LoadedMeshes);
+	LoadedMeshes.clear();
+	LoadedVertexes.clear();
+	LoadedVertexes = OBJModel::loadOBJ("Models/SmallBullet.obj");
+
+	LoadedMeshes.push_back(new Mesh(LoadedVertexes.data(), LoadedVertexes.size(), NULL, 0, glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(1.0f)
+	));
+	this->Meshes.push_back(LoadedMeshes);
+	LoadedMeshes.clear();
+	LoadedVertexes.clear();
+	LoadedVertexes = OBJModel::loadOBJ("Models/Hole.obj");
+
+	LoadedMeshes.push_back(new Mesh(LoadedVertexes.data(), LoadedVertexes.size(), NULL, 0, glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(0.0f),
+		glm::vec3(1.0f)
+	));
+	this->Meshes.push_back(LoadedMeshes);
+	LoadedMeshes.clear();
+	
 	//Inicjalizacja modelu
 
 	this->Models.push_back(new Model(
@@ -160,7 +197,7 @@ void Game::InitModels()
 		this->Materials[MATERIAL_1],
 		this->Textures[TEX_TURRET],
 		this->Textures[TEXTURE_BRICKS_SPEC],
-		"Models/Turret.obj"
+		"Models/Turret2.obj"
 	));
 
 	this->Models.push_back(new Model(
@@ -261,20 +298,26 @@ void Game::InitModels()
 		this->Textures[TEXTURE_BRICKS_SPEC],
 		"Models/Bullet.obj"
 	));
+
+	std::cout << "\nLoading: Dirt\n";
 	//Dirt
-	for (int i = -15; i < 15; i++)
+	//this->Models[Models.size() - 1]->Scale(glm::vec3(1000.0f, 1.0f, 1000.0f));
+	for (int i = -10; i < 10; i++)
 	{
-		for (int j = -15; j < 15; j++)
+		for (int j = -10; j < 10; j++)
 		{
 			this->Models.push_back(new Model(
-				glm::vec3(i * 2.0f, -1.4f, j*2.0f),
+				glm::vec3(i * 100.0f, -1.4f, j*100.0f),
 				this->Materials[MATERIAL_1],
 				this->Textures[TEX_DIRT],
 				this->Textures[TEXTURE_BRICKS_SPEC],
-				Dirt
+				this->Meshes[MESH_DIRT]
 			));
+			this->Models[Models.size() - 1]->Scale(glm::vec3(50.0f, 1.0f, 50.0f));
 		}
 	}
+
+	std::cout << "Loading: Particles\n";
 	//Cz¹steczki
 	for (int i = 0; i < 1000; i++)
 	{
@@ -283,13 +326,24 @@ void Game::InitModels()
 			this->Materials[MATERIAL_1],
 			this->Textures[TEX_PARTICLE],
 			this->Textures[TEXTURE_BRICKS_SPEC],
-			Particle
+			this->Meshes[MESH_PARTICLES]
+		));
+	}
+	std::cout << "Loading: Bullets\n";
+	for (int i = 0; i < 100; i++)
+	{
+		this->MGBullets.push_back(new Model(
+			glm::vec3(2.0f, 1.4f, 2.0f),
+			this->Materials[MATERIAL_1],
+			this->Textures[TEX_SMALL_BULLET],
+			this->Textures[TEXTURE_BRICKS_SPEC],
+			this->Meshes[MESH_BULLETS]
 		));
 	}
 
-	std::cout << "Load\n";
+	std::cout << "Models Loaded\n";
 
-	for (auto*& i : Meshes)
+	for (auto*& i : LoadedMeshes)
 		delete i;
 
 
@@ -299,7 +353,10 @@ void Game::InitModels()
 void Game::InitLights()
 {
 	//Œwiat³o
-	this->Lights.push_back(new glm::vec3(0.0f, 0.0f, 1.f));
+	//this->Lights.push_back(new glm::vec3(0.0f, 100.0f, 1.f));
+	this->Lights.push_back(new glm::vec3(0.0f, 10.0f, 1.f));
+
+	this->Lights.push_back(new glm::vec3(10.0f, 1.0f, 10.f));
 }
 
 void Game::InitUniforms()
@@ -310,7 +367,8 @@ void Game::InitUniforms()
 
 	//Pozycja œwiat³a
 	this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(*this->Lights[0], "lightPos0");
-	//this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(this->camPosition, "cameraPos");
+	this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(*this->Lights[1], "lightPos1");
+	this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(this->camPosition, "cameraPos");
 }
 
 void Game::SetParticles(glm::mat4 matrix)
@@ -340,6 +398,7 @@ void Game::UpdateUniforms()
 	
 	this->Shaders[SHADER_CORE_PROGRAM]->setMat4fv(this->ViewMatrix, "ViewMatrix");
 	this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(this->camera.GetPosition(), "cameraPos");
+	this->Shaders[SHADER_CORE_PROGRAM]->setVec3f(*this->Lights[1], "lightPos1");
 
 	//Pozwala na zmianê wielkoœci okna
 	glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
@@ -367,7 +426,7 @@ void Game::UpdateParticles()
 	for (size_t i = 0; i < Particles.size(); i++)
 	{
 		this->Particle_speed.push_back(Game::Random(10, 30));
-		std::cout << Particle_speed[i] << " ";
+		//std::cout << Particle_speed[i] << " ";
 	}
 	for (size_t i = 0; i < Particles.size(); i++)
 	{
@@ -389,7 +448,7 @@ void Game::UpdateParticles()
 	{
 		this->ParticleRotation.push_back(0.0f);
 	}
-	std::cout<<"\n";
+	//std::cout<<"\n";
 }
 
 Game::Game(const char* title,
@@ -470,6 +529,8 @@ Game::Game(const char* title,
 	this->explode = false;
 	this->CannonCooldown = 0.0f;
 
+	this->numBullet = 0;
+
 	this->x = 0;
 	this->z = 0;
 
@@ -491,6 +552,11 @@ Game::Game(const char* title,
 	for (size_t i = 0; i < this->Particles.size() ;i++)
 	{
 		this->ParticlesMatrices.push_back(glm::mat4(1.0f));
+	}
+	for (size_t i = 0; i < this->MGBullets.size(); i++)
+	{
+		this->BulletMatrices.push_back(glm::mat4(1.0f));
+		this->BulletsFire.push_back(false);
 	}
 }
 
@@ -542,6 +608,11 @@ void Game::updateDt()
 	{
 		CannonCooldown += dt;
 	}
+	if (MGCooldown < 10)
+	{
+		MGCooldown += dt;
+	}
+	
 	
 }
 
@@ -661,6 +732,25 @@ void Game::UpdateKeyboardInput()
 	{
 		SetParticles(glm::mat4(1.0f));
 	}
+	if (glfwGetKey(this->window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
+	{
+		if (MGCooldown > MG_RELOAD)
+		{
+			this->MGCooldown = 0;
+			this->numBullet += 1;
+			if (numBullet >= MGBullets.size())
+			{
+				numBullet = 0;
+			}
+			this->BulletsFire[numBullet] = true;
+			this->BulletMatrices[numBullet] = glm::mat4(1.0f);
+			this->BulletMatrices[numBullet] = glm::translate(this->BulletMatrices[numBullet], glm::vec3(x, 0.0f, z));
+			this->BulletMatrices[numBullet] = glm::rotate(this->BulletMatrices[numBullet], Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+			this->BulletMatrices[numBullet] = glm::translate(this->BulletMatrices[numBullet], glm::vec3(-0.21, 0.36f, 1.33f));
+			this->BulletMatrices[numBullet] = glm::scale(this->BulletMatrices[numBullet], glm::vec3(0.05f, 0.05f, 0.05f));
+			this->MGBullets[numBullet]->SetMatrix(this->BulletMatrices[numBullet]);
+		}
+	}
 	//Prêdkoœæ Gry
 	if (glfwGetKey(this->window, GLFW_KEY_1) == GLFW_PRESS)
 	{
@@ -677,6 +767,10 @@ void Game::UpdateKeyboardInput()
 	if (glfwGetKey(this->window, GLFW_KEY_4) == GLFW_PRESS)
 	{
 		this->gameSpeed = 0.1f;
+	}
+	if (glfwGetKey(this->window, GLFW_KEY_5) == GLFW_PRESS)
+	{
+		this->gameSpeed = 0.0000000001f;
 	}
 
 	
@@ -742,9 +836,28 @@ void Game::Update()
 		if (BulletMatrix[3].y < -0.5)
 		{
 			fire = false;
+			
+			
+			//Cz¹steczki
 			glm::mat4 ScaledBulletMatrix = BulletMatrix;
 			ScaledBulletMatrix = glm::scale(ScaledBulletMatrix, glm::vec3(4.0f,4.0f,4.0f));
 			SetParticles(ScaledBulletMatrix);
+			//B³ysk eksplozcji
+			*this->Lights[1] = ScaledBulletMatrix[3];
+			this->Lights[1]->y += 0.75f;
+			//Krater
+			this->Holes.push_back(new Model(
+				glm::vec3(BulletMatrix[3]),
+				this->Materials[MATERIAL_1],
+				this->Textures[TEX_HOLE],
+				this->Textures[TEXTURE_BRICKS_SPEC],
+				this->Meshes[MESH_HOLE]
+			));
+			glm::mat4 HoleMatrix = glm::mat4(1.0f);
+			HoleMatrix = glm::translate(HoleMatrix, glm::vec3(BulletMatrix[3]));
+			HoleMatrix = glm::translate(HoleMatrix, glm::vec3());
+			Holes[Holes.size() - 1]->SetMatrix(HoleMatrix);
+
 		}
 	}
 	else
@@ -755,6 +868,22 @@ void Game::Update()
 	}
 	this->Models[BULLET]->SetMatrix(this->BulletMatrix);
 	//Set TankPosition
+
+	//Pociski karabinu
+	for (int i = 0; i < MGBullets.size(); i++)
+	{
+		if (BulletsFire[i])
+		{
+			this->BulletMatrices[i] = glm::translate(this->BulletMatrices[i], glm::vec3(0.0f, 0.0f, MG_BULLETS_SPEED * dt));
+		}
+		else
+		{
+			this->BulletMatrices[i] = glm::mat4(1.0f);
+			this->BulletMatrices[i] = glm::translate(this->BulletMatrices[i], glm::vec3(x, 0.0f, z));
+			this->BulletMatrices[i] = glm::rotate(this->BulletMatrices[i], Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+			this->MGBullets[i]->SetMatrix(this->BulletMatrices[i]);
+	}
 	
 	//Ko³a
 	glm::mat4 Wheel = glm::mat4(1.0f);
@@ -804,6 +933,7 @@ void Game::Update()
 		}
 		this->Particles[i]->SetMatrix(ParticlesMatrices[i]);
 	}
+	this->Lights[1]->y -= 1.5f * dt;
 }
 
 void Game::Render()
@@ -827,6 +957,14 @@ void Game::Render()
 		i->Render(this->Shaders[SHADER_CORE_PROGRAM]);
 	}
 	for (auto& i : this->Particles)
+	{
+		i->Render(this->Shaders[SHADER_CORE_PROGRAM]);
+	}
+	for (auto& i : this->MGBullets)
+	{
+		i->Render(this->Shaders[SHADER_CORE_PROGRAM]);
+	}
+	for (auto& i : this->Holes)
 	{
 		i->Render(this->Shaders[SHADER_CORE_PROGRAM]);
 	}

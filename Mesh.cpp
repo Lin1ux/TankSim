@@ -34,7 +34,7 @@ void Mesh::InitVAO()
 	glEnableVertexAttribArray(2);
 	//Normal
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
-	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
 
 	//Bind VAO
 	glBindVertexArray(0);
@@ -67,6 +67,7 @@ Mesh::Mesh(Vertex* vertexArray, const unsigned& nrOfVertices, GLuint* indexArray
 	this->scale = scale;
 
 	this->CanUpdate = true;
+	this->RenderTexture = true;
 
 	this->nrOfVertices = nrOfVertices;
 	this->nrOfIndices = nrOfIndicies;
@@ -91,6 +92,9 @@ Mesh::Mesh(Primitive* primitive, glm::vec3 position,glm::vec3 origin, glm::vec3 
 	this->origin = origin;
 	this->rotation = rotation;
 	this->scale = scale;
+
+	this->CanUpdate = true;
+	this->RenderTexture = true;
 
 	this->nrOfVertices = primitive->getNrOfVertices();
 	this->nrOfIndices = primitive->getNrOfIndices();
@@ -119,6 +123,7 @@ Mesh::Mesh(const Mesh& obj)
 	this->scale = obj.scale;
 
 	this->CanUpdate = true;
+	this->RenderTexture = true;
 
 	this->nrOfVertices = obj.nrOfVertices;
 	this->nrOfIndices = obj.nrOfIndices;
@@ -200,6 +205,11 @@ void Mesh::SetColor(glm::vec3 color)
 	{
 		vertexArray[i].color = color;
 	}
+}
+
+void Mesh::RenderColor(bool OnlyColor)
+{
+	this->RenderTexture = !OnlyColor;
 }
 
 glm::mat4 Mesh::GetMatrix()

@@ -38,6 +38,7 @@ private:
 	glm::mat4 ModelMatrix;
 
 	bool CanUpdate;
+	bool RenderTexture;
 
 	//void InitVAO(Vertex* vertexArray,
 	//	const unsigned& nrOfVertices,
@@ -87,6 +88,7 @@ public:
 	void Rotate(const glm::vec3 rotation);
 	void Scale(const glm::vec3 scale);
 	void SetColor(glm::vec3 color);
+	void RenderColor(bool OnlyColor);
 
 	glm::mat4 GetMatrix();
 

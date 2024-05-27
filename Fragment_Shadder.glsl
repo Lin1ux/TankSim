@@ -22,21 +22,27 @@ uniform Material material;
 
 
 uniform vec3 lightPos0;
+uniform vec3 lightPos1;
 uniform vec3 cameraPos;
 
 //Funkcje
 //Œwiat³o otoczenia
 vec3 calculateAmbient(Material material)
 {
-	return material.ambient;
+	return vec3(1.0f) * clamp(dot(normalize(vs_normal), normalize(lightPos0)), 0, 1);
 }
 
 //Œwiat³o rozproszone
 vec3 calculateDiffuse(Material material,vec3 vs_position,vec3 vs_normal,vec3 lightPos0)
 {
 	vec3 posToLightDirVec = normalize(lightPos0 - vs_position);
+	float distance =  length(lightPos0 - vs_position);
 	float diffuse = clamp(dot(posToLightDirVec,vs_normal),0,1);
-	vec3 diffuseFinal = material.diffuse * diffuse;
+	
+	//vec3 color = vec3(1.0,0.7,0.1);		//Pomarañczowy
+	vec3 color = vec3(1.0,0.5,0.0);		//Pomarañczowy
+	//vec3 color = vec3(0.0,0.0,1.0);
+	vec3 diffuseFinal = material.diffuse * diffuse * (1/(distance/10)) * color;
 
 	return diffuseFinal;
 }
@@ -53,29 +59,19 @@ vec3 calculateSpecular(Material material,vec3 vs_position,vec3 vs_normal,vec3 li
 	return specularFinal;
 }
 void main()
-{
-	//fs_color = vec4(vs_color,1.0f);
-	//fs_color = texture(texture0, vs_texcord) * vec4(vs_color,1.0f) + texture(texture1, vs_texcord) * vec4(vs_color,1.0f);
-	
+{	
 	//Œwiat³o otoczenia
 	vec3 ambientFinal = calculateAmbient(material);
 
 
 	//Œwat³o rozproszone
-	vec3 diffuseFinal = calculateDiffuse(material,vs_position,vs_normal,lightPos0);
+	vec3 diffuseFinal = calculateDiffuse(material,vs_position,vs_normal,lightPos1);
 	
 
 	//Œwiat³o lustrzane
 	vec3 specularFinal = calculateSpecular(material,vs_position,vs_normal,lightPos0,cameraPos);
 
 
-	//Os³abienie
-
-
 	//Ostateczne œwiat³o
-	//vec4(vs_color,1.0f)
-	fs_color = texture(material.diffuseTex, vs_texcord)
-	* (vec4(ambientFinal,1.0f) + vec4(diffuseFinal,1.0f) + vec4(specularFinal,1.0f));
-
-	//fs_color = (vec4(ambientFinal,1.0f) + vec4(diffuseFinal,1.0f) + vec4(specularFinal,1.0f));
+	fs_color = texture(material.diffuseTex, vs_texcord) * (vec4(ambientFinal,1.0f) + vec4(diffuseFinal,1.0f) + vec4(specularFinal,1.0f));
 }

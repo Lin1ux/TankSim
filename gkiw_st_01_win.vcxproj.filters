@@ -18,9 +18,6 @@
     <ClInclude Include="allmodels.h">
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="constants.h">
-      <Filter>Pliki naglówkowe</Filter>
-    </ClInclude>
     <ClInclude Include="lodepng.h">
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
@@ -76,6 +73,9 @@
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
+      <Filter>Pliki naglówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="constants.h">
       <Filter>Pliki naglówkowe</Filter>
     </ClInclude>
   </ItemGroup>
@@ -225,39 +225,5 @@
     <Image Include="Textures\Cannon2.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="M\BackWheel.obj" />
-    <Object Include="M\Bullet.obj" />
-    <Object Include="M\Cannon2.obj" />
-    <Object Include="M\cube.obj" />
-    <Object Include="M\DoubleWheel.obj" />
-    <Object Include="M\FrontWheel.obj" />
-    <Object Include="M\LTrack.obj" />
-    <Object Include="M\Particle.obj" />
-    <Object Include="M\RTrack.obj" />
-    <Object Include="M\SingleWheel.obj" />
-    <Object Include="M\Tank.obj" />
-    <Object Include="M\Tank2.obj" />
-    <Object Include="M\Tank3.obj" />
-    <Object Include="M\Tank4.obj" />
-    <Object Include="M\Tank5.obj" />
-    <Object Include="M\Turret.obj" />
-    <Object Include="Models\BackWheel.obj" />
-    <Object Include="Models\Bullet.obj" />
-    <Object Include="Models\Cannon2.obj" />
-    <Object Include="Models\cube.obj" />
-    <Object Include="Models\DoubleWheel.obj" />
-    <Object Include="Models\FrontWheel.obj" />
-    <Object Include="Models\LTrack.obj" />
-    <Object Include="Models\Particle.obj" />
-    <Object Include="Models\RTrack.obj" />
-    <Object Include="Models\SingleWheel.obj" />
-    <Object Include="Models\Tank.obj" />
-    <Object Include="Models\Tank2.obj" />
-    <Object Include="Models\Tank3.obj" />
-    <Object Include="Models\Tank4.obj" />
-    <Object Include="Models\Tank5.obj" />
-    <Object Include="Models\Turret.obj" />
   </ItemGroup>
 </Project>
