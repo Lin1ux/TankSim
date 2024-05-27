@@ -88,15 +88,38 @@
     <Image Include="Textures\Dirt.png" />
     <Image Include="Textures\DoubleWheel.png" />
     <Image Include="Textures\FrontWheel.png" />
+    <Image Include="Textures\Hole.png" />
     <Image Include="Textures\HullTank.png" />
     <Image Include="Textures\HullTank2.png" />
     <Image Include="Textures\HullTank3.png" />
     <Image Include="Textures\Particle.png" />
     <Image Include="Textures\SingleWheel.png" />
+    <Image Include="Textures\SmallBullet.png" />
     <Image Include="Textures\stone-wall.png" />
     <Image Include="Textures\TrackL.png" />
     <Image Include="Textures\TrackR.png" />
     <Image Include="Textures\Turret.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Models\BackWheel.obj" />
+    <Object Include="Models\Bullet.obj" />
+    <Object Include="Models\Cannon2.obj" />
+    <Object Include="Models\cube.obj" />
+    <Object Include="Models\DoubleWheel.obj" />
+    <Object Include="Models\FrontWheel.obj" />
+    <Object Include="Models\Hole.obj" />
+    <Object Include="Models\LTrack.obj" />
+    <Object Include="Models\Particle.obj" />
+    <Object Include="Models\RTrack.obj" />
+    <Object Include="Models\SingleWheel.obj" />
+    <Object Include="Models\SmallBullet.obj" />
+    <Object Include="Models\Tank.obj" />
+    <Object Include="Models\Tank2.obj" />
+    <Object Include="Models\Tank3.obj" />
+    <Object Include="Models\Tank4.obj" />
+    <Object Include="Models\Tank5.obj" />
+    <Object Include="Models\Turret.obj" />
+    <Object Include="Models\Turret2.obj" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

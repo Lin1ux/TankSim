@@ -855,7 +855,10 @@ void Game::Update()
 			));
 			glm::mat4 HoleMatrix = glm::mat4(1.0f);
 			HoleMatrix = glm::translate(HoleMatrix, glm::vec3(BulletMatrix[3]));
-			HoleMatrix = glm::translate(HoleMatrix, glm::vec3());
+			HoleMatrix = glm::translate(HoleMatrix, glm::vec3(0.0f,0.2f,0.0f));
+			HoleMatrix = glm::rotate(HoleMatrix,glm::radians((float) Game::Random(0, 360)), glm::vec3(0.0f, 1.0f, 0.0f));
+			HoleMatrix = glm::scale(HoleMatrix, glm::vec3(1.0f, (float) Game::Random(20, 80)/100, 1.0f));
+
 			Holes[Holes.size() - 1]->SetMatrix(HoleMatrix);
 
 		}
