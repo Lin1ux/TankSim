@@ -716,14 +716,22 @@ void Game::UpdateKeyboardInput()
 	//Strza³ 
 	if (glfwGetKey(this->window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
+		//Sprawdzenie czy dzia³o zosta³o prze³adowane ¿eby pociski siê nak³ada³y
 		if (CannonCooldown > CANNON_RELOAD)	//Dzia³o wymaga czasu do prze³adowania
 		{
-			this->CannonCooldown = 0;
+			//Zresetowanie ³adowania dzia³a
+			this->CannonCooldown = 0;		
+			//Przypisanie do macierzy pocisku macierz dzia³a
 			this->BulletMatrix = this->CannonMatrix;
+			//Obrót pocisku jeœli model jest skierowany w z³¹ stronê
 			this->BulletMatrix = glm::rotate(this->BulletMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			//Zmiana wielkoœci modelu pocisku
 			this->BulletMatrix = glm::scale(this->BulletMatrix, glm::vec3(0.25f, 0.25f, 0.25f));
+			//Dodanie przesuniêcia pocisku (tak aby pocisk pojawi³ siê przed luf¹)
 			this->BulletMatrix = glm::translate(this->BulletMatrix, glm::vec3(-8.0f, 0.0f, 0.0f));
+			//Ustawienie macierzy (ja mam na to w³asn¹ funkcjê)
 			this->Models[BULLET]->SetMatrix(this->BulletMatrix);
+			//Sygna³ który sygnalizuje ¿e pocisk mo¿e siê ruszaæ
 			this->fire = true;
 		}
 	}
@@ -734,20 +742,31 @@ void Game::UpdateKeyboardInput()
 	}
 	if (glfwGetKey(this->window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
 	{
+		//Prze³adowanie
 		if (MGCooldown > MG_RELOAD)
 		{
+			//Pocz¹tek prze³adowania
 			this->MGCooldown = 0;
+			//Nastêpny pocisk z tabeli
 			this->numBullet += 1;
+			//Num pocisku nie wychodzi po za tablicê
 			if (numBullet >= MGBullets.size())
 			{
 				numBullet = 0;
 			}
+			//Sygna³ umo¿liwaj¹cy ruch pocisku
 			this->BulletsFire[numBullet] = true;
+			
 			this->BulletMatrices[numBullet] = glm::mat4(1.0f);
+			//Ustawienie tej samej pozycji co czo³g
 			this->BulletMatrices[numBullet] = glm::translate(this->BulletMatrices[numBullet], glm::vec3(x, 0.0f, z));
+			//Ustawienie tej samej rotacji co czo³g
 			this->BulletMatrices[numBullet] = glm::rotate(this->BulletMatrices[numBullet], Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+			//Przesuniêcie pocisku aby pojawia³ siê na lufie
 			this->BulletMatrices[numBullet] = glm::translate(this->BulletMatrices[numBullet], glm::vec3(-0.21, 0.36f, 1.33f));
+			//Zmiana wielkoœci
 			this->BulletMatrices[numBullet] = glm::scale(this->BulletMatrices[numBullet], glm::vec3(0.05f, 0.05f, 0.05f));
+			//Przypisanie macierzy pocisku
 			this->MGBullets[numBullet]->SetMatrix(this->BulletMatrices[numBullet]);
 		}
 	}
@@ -829,12 +848,16 @@ void Game::Update()
 	this->CannonMatrix = glm::rotate(this->CannonMatrix, CannonRotation, glm::vec3(1.0f, 0.0f, 0.0f));
 	this->Models[TANK_CANNON]->SetMatrix(this->CannonMatrix);
 	//Pocisk
-	if (fire)
+	if (fire)	//Zmienna sprawdzaj¹ca czy pocisk mo¿e siê pojawiæ
 	{
+		//Obrót pocisku, który sprawia ¿e pocisk bêdzie siê obracaæ (jeœli ma nie byæ grawitacji mo¿na pomin¹æ)
 		this->BulletMatrix = glm::rotate(this->BulletMatrix, glm::radians(10.0f * dt), glm::vec3(0.0f, 0.0f, 1.0f));
+		//Ruch pocisku 
 		this->BulletMatrix = glm::translate(this->BulletMatrix, glm::vec3(-BULLET_SPEED * dt, 0.0f, 0.0f));
+		//Wykrycie ¿e pocisk jest w ziemi
 		if (BulletMatrix[3].y < -0.5)
 		{
+			//Zatrzymanie pocisku
 			fire = false;
 			
 			
